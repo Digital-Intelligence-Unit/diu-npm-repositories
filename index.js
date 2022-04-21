@@ -19,7 +19,9 @@ const Models = {
   AccessLog: require("./models/access-log"),
   AccessLogStatistic: require("./models/access-log-statistic"),
   TeamModel: require("./models/team"),
+  OrganisationModel: require("./models/organisation"),
 
+  ActiveDirectoryModel: require("./models/active-directory"),
   ConfluenceModel: require("./models/confluence"),
   ClinicalTrialModel: require("./models/clinical-trial"),
 

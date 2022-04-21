@@ -1,21 +1,17 @@
-const site = process.env.SITE_URL || "nexusintelligencenw.nhs.uk";
-const fullSite = ((process.env.AWSPROFILE || "Dev") === "Dev" ? "dev." : "www.") + site;
-const fullApi = ((process.env.AWSPROFILE || "Dev") === "Dev" ? "dev." : "") + site;
-
 module.exports = {
-  // account: {
-  //     host: process.env.EMAIL_HOST,
-  //     email: process.env.EMAIL_USERNAME,
-  //     password: process.env.EMAIL_PASSWORD
-  // },
-  message_actions: {
-    home_page: "https://" + fullSite,
-    account_request: "https://" + fullSite + "/support/access-request",
-    account_request_approve: "https://" + fullSite + "/support/access-request/approve",
-    account_request_deny: "https://" + fullSite + "/support/access-request/deny",
-    sign_acknowledgement: "https://messaging." + fullApi + "/acknowledgements/confirmack",
-  },
-  message_template: `
+    // account: {
+    //     host: process.env.EMAIL_HOST,
+    //     email: process.env.EMAIL_USERNAME,
+    //     password: process.env.EMAIL_PASSWORD
+    // },
+    message_actions: {
+        home_page: "https://www.nexusintelligencenw.nhs.uk",
+        account_request: "https://www.nexusintelligencenw.nhs.uk/support/access-request",
+        account_request_approve: "https://www.nexusintelligencenw.nhs.uk/support/access-request/approve",
+        account_request_deny: "https://www.nexusintelligencenw.nhs.uk/support/access-request/deny",
+        sign_acknowledgement: "https://messaging." + ((process.env.AWSPROFILE || "Dev") === 'Dev' ? 'dev.' : '') + "nexusintelligencenw.nhs.uk/acknowledgements/confirmack"
+    },
+    message_template: `
         <style>
             @import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
             div { width: calc(100% - 30px); }
@@ -81,5 +77,5 @@ module.exports = {
         <div class="body">
             <div class="full main mat-card">MESSAGE</div>
         </div>
-    `,
-};
+    `
+}

@@ -1,48 +1,46 @@
-const BaseModel = require("./base/dynamo-db");
+const BaseModel = require('./base/dynamo-db');
 const StringHelper = require("../helpers/string");
 class VerificationCodeModel extends BaseModel {
-  tableName = "verificationcodes";
 
-  create(attributes, callback) {
-    //Generate code
-    attributes.code = StringHelper.rand();
+    tableName = 'verificationcodes';
 
-    //Store in database
-    super.create(attributes, (err) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, attributes);
-      }
-    });
-  }
+    create(attributes, callback) {
+        //Generate code
+        attributes.code = StringHelper.rand();
 
-  getCode(code, username, callback) {
-    var params = {
-      TableName: this.tableName,
-      KeyConditionExpression: "#username = :username AND #code = :code",
-      ExpressionAttributeNames: {
-        "#username": "username",
-        "#code": "code",
-      },
-      ExpressionAttributeValues: {
-        ":username": username,
-        ":code": code,
-      },
-    };
-    this.documentClient.query(params, callback);
-  }
+        //Store in database
+        super.create(attributes, (err) => {
+            if(err) { callback(err); } else { callback(null, attributes); }
+        });
+    }
 
-  deleteCode(code, username, callback) {
-    var params = {
-      TableName: this.tableName,
-      Key: {
-        code: code,
-        username: username,
-      },
-    };
-    this.documentClient.delete(params, callback);
-  }
+    getCode(code, username, callback) {
+        var params = {
+            TableName: this.tableName,
+            KeyConditionExpression: "#username = :username AND #code = :code",
+            ExpressionAttributeNames: {
+                "#username": "username",
+                "#code": "code",
+            },
+            ExpressionAttributeValues: {
+                ":username": username,
+                ":code": code,
+            },
+        };
+        this.documentClient.query(params, callback);
+    }
+
+    deleteCode(code, username, callback) {
+        var params = {
+            TableName: this.tableName,
+            Key: {
+                code: code,
+                username: username,
+            },
+        };
+        this.documentClient.delete(params, callback);
+    }
+
 }
 
 module.exports = VerificationCodeModel;

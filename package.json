@@ -1,18 +1,18 @@
 {
   "name": "diu-data-functions",
-  "version": "1.2.2",
+  "version": "1.2.1",
   "description": "NPM Repository for common data and database functions across applications",
   "main": "index.js",
   "dependencies": {
     "activedirectory": "^0.7.2",
     "aws-sdk": "^2.540.0",
     "bcryptjs": "~2.4.3",
+    "crypto-js": "^4.1.1",
     "jsonwebtoken": "^8.5.1",
     "nodemailer": "^6.7.3",
     "pg": "^8.7.3",
     "request": "^2.88.2"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,9 +24,12 @@
     "url": "https://github.com/morgans3/diu-npm-repositories/issues"
   },
   "author": "stewartmorganv2",
-  "license": "OGL-3.0",
+  "license": "UNLICENSED",
   "repository": {
     "type": "git",
     "url": "ssh://git-codecommit.eu-west-2.amazonaws.com/v1/repos/npm-data-functions"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.1.1"
   }
 }
