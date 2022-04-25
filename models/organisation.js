@@ -3,6 +3,7 @@ class Organisation extends BaseModel {
 
     tableName = 'organisations';
 
+    //To-do: Cache the response from this method
     get(params, callback) {
         let query = { 
             TableName: this.tableName,

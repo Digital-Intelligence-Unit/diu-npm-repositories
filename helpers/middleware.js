@@ -1,4 +1,5 @@
 const JWT = require("jsonwebtoken");
+const Validator = require("./validator");
 class Middleware {
     static authenticate(type) {
         return (req, res, next) => {
@@ -31,6 +32,17 @@ class Middleware {
         } else {
             console.log("Unknown referer attempted to create a role: " + origin);
             res.status(400).json({ success: false, msg: "Unknown referer" });
+        }
+    }
+
+    static validate(dataType, schema, messages = {}) {
+        return (req, res, next) => {
+            const status = Validator.check(req[dataType], schema, messages);
+            if(status.valid) {
+                next();
+            } else {
+                res.status(400).json({ success: false, msg: status.errors[0].message });
+            }
         }
     }
 

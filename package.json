@@ -1,6 +1,6 @@
 {
   "name": "diu-data-functions",
-  "version": "1.2.1",
+  "version": "1.2.4",
   "description": "NPM Repository for common data and database functions across applications",
   "main": "index.js",
   "dependencies": {
@@ -8,6 +8,7 @@
     "aws-sdk": "^2.540.0",
     "bcryptjs": "~2.4.3",
     "crypto-js": "^4.1.1",
+    "fastest-validator": "^1.12.0",
     "jsonwebtoken": "^8.5.1",
     "nodemailer": "^6.7.3",
     "pg": "^8.7.3",

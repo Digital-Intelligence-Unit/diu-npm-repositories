@@ -8,6 +8,7 @@ const Methods = {
 //Models
 const Models = {
   UserModel: require("./models/user"),
+  UserProfileModel: require("./models/user-profile"),
   FormSubmissionModel: require("./models/form-submission"),
   VerificationCodeModel: require("./models/verification-code"),
 
@@ -36,7 +37,8 @@ const Helpers = {
   Aws: require("./helpers/aws"),
   String: require("./helpers/string"),
   Middleware: require("./helpers/middleware"),
-  Email: require("./helpers/email")
+  Email: require("./helpers/email"),
+  Validator: require("./helpers/validator")
 }
 
 //Exports
