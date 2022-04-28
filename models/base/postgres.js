@@ -1,123 +1,121 @@
-const PostgresHelper = require("../../helpers/postgres");
+const PostgresHelper = require("../../helpers/postgres")
 class BasePostgresModel {
+    pool // Pg Pool
+    tableName = 'table_name'
+    primaryKey = 'id'
 
-    pool; //Pg Pool
-    tableName = 'table_name';
-    primaryKey = 'id';
-
-    constructor(pool = null) { 
-        this.pool = pool || require("../../config/database").connections.postgres;
+    constructor (pool = null) {
+        this.pool = pool || require("../../config/database").connections.postgres
     }
 
-    query(query, callback) {
-        //Connect to client
+    query (query, callback) {
+        // Connect to client
         this.pool.connect((err, client, release) => {
-            //Error?
+            // Error?
             if (err) {
-                console.error('Error acquiring client', err.stack);
-                callback("Error acquiring client", null);
-                return;
+                console.error('Error acquiring client', err.stack)
+                callback("Error acquiring client", null)
+                return
             }
 
-            //Make query
+            // Make query
             client.query(query, (err, result) => {
-                //Release connection
-                release();
+                // Release connection
+                release()
 
-                //Return errors?
+                // Return errors?
                 if (err) {
-                    console.error('Error executing query', err.stack);
-                    callback("Error executing query", null);
-                    return;
+                    console.error('Error executing query', err.stack)
+                    callback("Error executing query", null)
+                    return
                 }
 
-                //Return rows
-                callback(null, result.rows || null);
-            });
-        });
+                // Return rows
+                callback(null, result.rows || null)
+            })
+        })
     }
 
-    create(attributes, callback) {
-        //Is array?
+    create (attributes, callback) {
+        // Is array?
         if (!(attributes instanceof Array)) {
-            //Change attributes?
-            attributes = PostgresHelper.marshallAttributes(attributes);
+            // Change attributes?
+            attributes = PostgresHelper.marshallAttributes(attributes)
 
-            //Build query
-            let query = `INSERT INTO ${this.tableName}(${Object.keys(attributes).join(', ')})`;
-            query += " VALUES(" + [...Array(Object.values(attributes).length)].map((u, i) => "$" + (i + 1)) + ") RETURNING *";
+            // Build query
+            let query = `INSERT INTO ${this.tableName}(${Object.keys(attributes).join(', ')})`
+            query += " VALUES(" + [...Array(Object.values(attributes).length)].map((u, i) => "$" + (i + 1)) + ") RETURNING *"
 
-            //Make query 
-            this.query({ text: query, values: Object.values(attributes) }, callback);
+            // Make query
+            this.query({ text: query, values: Object.values(attributes) }, callback)
         } else {
-            //Create list of keys and values
-            let keys = [...new Set(attributes.flatMap(x => Object.keys(x)))]
-            let values = [];
+            // Create list of keys and values
+            const keys = [...new Set(attributes.flatMap(x => Object.keys(x)))]
+            const values = []
 
-            //Create query
-            let query = `INSERT INTO ${this.tableName}(${keys.join(', ')})  VALUES `;
+            // Create query
+            let query = `INSERT INTO ${this.tableName}(${keys.join(', ')})  VALUES `
 
-            //Loop through items
+            // Loop through items
             attributes.forEach((item) => {
-                //Change attributes?
-                item = PostgresHelper.marshallAttributes(item);
+                // Change attributes?
+                item = PostgresHelper.marshallAttributes(item)
 
-                //Add attributes to query
+                // Add attributes to query
                 query += "(" + [...Array(keys.length)].map(
                     (u, i) => "$" + ((values.length + i) + 1)
-                ) + "), ";
-                
-                //Add each attribute to values
+                ) + "), "
+
+                // Add each attribute to values
                 keys.forEach((key) => {
                     values.push(item[key] || null)
-                });
-            });
+                })
+            })
 
-            //Remove trailing comma
-            query = query.slice(0, -2) + " RETURNING *";
+            // Remove trailing comma
+            query = query.slice(0, -2) + " RETURNING *"
 
-            //Make query 
-            this.query({ text: query, values: values }, callback);
+            // Make query
+            this.query({ text: query, values }, callback)
         }
     }
 
-    get(callback) {
-        //Select all
-        this.query(`SELECT * FROM ${this.tableName}`, callback);
-    }
-    
-    getByPrimaryKey(primaryKeyValue,callback) {
-        //Select all
-        let query = `SELECT * FROM ${this.tableName} WHERE ${this.primaryKey} = $1`;
-        this.query({ text: query, values: [primaryKeyValue] }, callback);
+    get (callback) {
+        // Select all
+        this.query(`SELECT * FROM ${this.tableName}`, callback)
     }
 
-    updateByPrimaryKey(primaryKeyValue, attributes, callback) {
-        //Change attributes?
-        attributes = PostgresHelper.marshallAttributes(attributes);
-        //Build query
-        let query = `UPDATE ${this.tableName} SET `;
+    getByPrimaryKey (primaryKeyValue, callback) {
+        // Select all
+        const query = `SELECT * FROM ${this.tableName} WHERE ${this.primaryKey} = $1`
+        this.query({ text: query, values: [primaryKeyValue] }, callback)
+    }
 
-        let index = 1;
+    updateByPrimaryKey (primaryKeyValue, attributes, callback) {
+        // Change attributes?
+        attributes = PostgresHelper.marshallAttributes(attributes)
+        // Build query
+        let query = `UPDATE ${this.tableName} SET `
+
+        let index = 1
         for (const column in attributes) {
-            query += column + ' = $' + index + ', '; 
-            index ++;
+            query += column + ' = $' + index + ', '
+            index++
         }
-        query = query.slice(0, -2) + ` WHERE ${this.primaryKey} = '${primaryKeyValue}' RETURNING *`;
-        
-        //Make update
-        this.query({ text: query, values: Object.values(attributes) }, callback);
+        query = query.slice(0, -2) + ` WHERE ${this.primaryKey} = '${primaryKeyValue}' RETURNING *`
+
+        // Make update
+        this.query({ text: query, values: Object.values(attributes) }, callback)
     }
 
-    deleteByPrimaryKey(primaryKeyValue,callback){
-        //Build query
-        let query = `DELETE FROM ${this.tableName} WHERE ${this.primaryKey} = '${primaryKeyValue}'`;
-        //Make update
-        this.query(query, callback);
+    deleteByPrimaryKey (primaryKeyValue, callback) {
+        // Build query
+        const query = `DELETE FROM ${this.tableName} WHERE ${this.primaryKey} = '${primaryKeyValue}'`
+        // Make update
+        this.query(query, callback)
     }
 
-    delete(keys, callback) {}
-
+    delete (keys, callback) {}
 }
 
-module.exports = BasePostgresModel;
+module.exports = BasePostgresModel

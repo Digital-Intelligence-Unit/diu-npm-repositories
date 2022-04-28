@@ -1,0 +1,25 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends": [
+        "standard"
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "quotes": "off",
+        "indent": ["error", 4],
+        "accessor-pairs": "off",
+        "no-func-assign": "off",
+        "no-inner-declarations": "off",
+        "no-new-object": "off",
+        "no-new-require": "off",
+        "constructor-super": "off",
+        "eqeqeq": "off",
+        "lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }]
+    }
+}
