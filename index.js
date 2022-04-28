@@ -21,6 +21,9 @@ const Models = {
   AccessLogStatistic: require("./models/access-log-statistic"),
   TeamModel: require("./models/team"),
   OrganisationModel: require("./models/organisation"),
+  CredentialModel: require("./models/credential"),
+  GovUkModel: require("./models/govuk"),
+  CohortModel: require("./models/cohort"),
 
   ActiveDirectoryModel: require("./models/active-directory"),
   ConfluenceModel: require("./models/confluence"),
