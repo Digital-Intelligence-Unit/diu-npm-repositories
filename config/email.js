@@ -3,19 +3,19 @@ const fullSite = ((process.env.AWSPROFILE || "Dev") === "Dev" ? "dev." : "www.")
 const fullApi = ((process.env.AWSPROFILE || "Dev") === "Dev" ? "dev." : "") + site;
 
 module.exports = {
-  // account: {
-  //     host: process.env.EMAIL_HOST,
-  //     email: process.env.EMAIL_USERNAME,
-  //     password: process.env.EMAIL_PASSWORD
-  // },
-  message_actions: {
-    home_page: "https://" + fullSite,
-    account_request: "https://" + fullSite + "/support/access-request",
-    account_request_approve: "https://" + fullSite + "/support/access-request/approve",
-    account_request_deny: "https://" + fullSite + "/support/access-request/deny",
-    sign_acknowledgement: "https://messaging." + fullApi + "/acknowledgements/confirmack",
-  },
-  message_template: `
+    // account: {
+    //     host: process.env.EMAIL_HOST,
+    //     email: process.env.EMAIL_USERNAME,
+    //     password: process.env.EMAIL_PASSWORD
+    // },
+    message_actions: {
+        home_page: "https://" + fullSite,
+        account_request: "https://" + fullSite + "/support/access-request",
+        account_request_approve: "https://" + fullSite + "/support/access-request/approve",
+        account_request_deny: "https://" + fullSite + "/support/access-request/deny",
+        sign_acknowledgement: "https://messaging." + fullApi + "/acknowledgements/confirmack",
+    },
+    message_template: `
         <style>
             @import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
             div { width: calc(100% - 30px); }
