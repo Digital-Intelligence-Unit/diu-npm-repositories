@@ -1,26 +1,26 @@
 class DynamoDB {
     static update(documentClient, tableName, keys, attributes, callback) {
-        //Create update statement
-        let params = {
+        // Create update statement
+        const params = {
             Key: keys,
             TableName: tableName,
-            UpdateExpression: 'set',
+            UpdateExpression: "set",
             ExpressionAttributeNames: {},
             ExpressionAttributeValues: {},
-            ReturnValues: "ALL_NEW"
-        }
+            ReturnValues: "ALL_NEW",
+        };
 
-        //Create expression for each field
+        // Create expression for each field
         Object.entries(attributes).forEach(([key, item]) => {
             params.UpdateExpression += ` #${key} = :${key},`;
             params.ExpressionAttributeNames[`#${key}`] = key;
-            params.ExpressionAttributeValues[`:${key}`] = item
+            params.ExpressionAttributeValues[`:${key}`] = item;
         });
         params.UpdateExpression = params.UpdateExpression.slice(0, -1);
 
-        //Update item
+        // Update item
         documentClient.update(params, (err, res) => {
-            if(err) {
+            if (err) {
                 callback(err, null);
             } else {
                 callback(null, res.Attributes || null);
@@ -29,9 +29,13 @@ class DynamoDB {
     }
 
     static delete(documentClient, tableName, keys, callback) {
-        documentClient.delete({
-            TableName: tableName, Key: keys,
-        }, callback);
+        documentClient.delete(
+            {
+                TableName: tableName,
+                Key: keys,
+            },
+            callback
+        );
     }
 }
 

@@ -1,29 +1,29 @@
 class Postgres {
-  static marshallAttribute(attribute) {
-    if (attribute instanceof Array) {
-      //Handle arrays
-      return "{" + attribute.join(",") + "}";
+    static marshallAttribute(attribute) {
+        if (attribute instanceof Array) {
+            // Handle arrays
+            return "{" + attribute.join(",") + "}";
+        }
+
+        if (typeof attribute === "object") {
+            // Handle json columns
+            return "'" + JSON.stringify(attribute) + "'";
+        }
+
+        // if (typeof attribute === 'string') {
+        //     //Handle string
+        //     return "" + attribute + "";
+        // }
+
+        return attribute;
     }
 
-    if (typeof attribute === "object") {
-      //Handle json columns
-      return "'" + JSON.stringify(attribute) + "'";
+    static marshallAttributes(attributes) {
+        for (const column in attributes) {
+            attributes[column] = this.marshallAttribute(attributes[column]);
+        }
+        return attributes;
     }
-
-    // if (typeof attribute === 'string') {
-    //     //Handle string
-    //     return "" + attribute + "";
-    // }
-
-    return attribute;
-  }
-
-  static marshallAttributes(attributes) {
-    for (const column in attributes) {
-      attributes[column] = this.marshallAttribute(attributes[column]);
-    }
-    return attributes;
-  }
 }
 
 module.exports = Postgres;
