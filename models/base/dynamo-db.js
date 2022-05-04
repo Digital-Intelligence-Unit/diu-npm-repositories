@@ -64,7 +64,7 @@ class BaseDDBModel {
 
         // Add secondary key?
         if (tableKeyNames.length > 1) {
-            query["KeyConditionExpression"] += `and #${tableKeyNames[1]} = :${tableKeyNames[1]}`;
+            query["KeyConditionExpression"] += ` and #${tableKeyNames[1]} = :${tableKeyNames[1]}`;
             query["ExpressionAttributeNames"]["#" + tableKeyNames[1]] = tableKeyNames[1];
             query["ExpressionAttributeValues"][":" + tableKeyNames[1]] = tableKeys[tableKeyNames[1]];
         }
