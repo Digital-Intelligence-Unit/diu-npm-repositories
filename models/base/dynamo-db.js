@@ -58,7 +58,7 @@ class BaseDDBModel {
                 ["#" + tableKeyNames[0]]: tableKeyNames[0],
             },
             ExpressionAttributeValues: {
-                [":" + tableKeyNames[0]]: tableKeyNames[0],
+                [":" + tableKeyNames[0]]: tableKeys[tableKeyNames[0]],
             },
         };
 
@@ -66,7 +66,7 @@ class BaseDDBModel {
         if (tableKeyNames.length > 1) {
             query["KeyConditionExpression"] += `and #${tableKeyNames[1]} = :${tableKeyNames[1]}`;
             query["ExpressionAttributeNames"]["#" + tableKeyNames[1]] = tableKeyNames[1];
-            query["ExpressionAttributeValues"][":" + tableKeyNames[1]] = tableKeyNames[1];
+            query["ExpressionAttributeValues"][":" + tableKeyNames[1]] = tableKeys[tableKeyNames[1]];
         }
 
         // Make query

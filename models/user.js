@@ -41,7 +41,6 @@ class UserModel extends BaseModel {
             },
             (err, data) => {
                 // Error occurred
-                console.log(err, keys);
                 if (err) {
                     callback(err, null);
                     return;
@@ -56,6 +55,61 @@ class UserModel extends BaseModel {
                 }
             }
         );
+    }
+
+    get(params, callback) {
+        const query = {
+            TableName: this.tableName
+        };
+
+        // Get by page
+        if (params.pageKey) {
+            query.ExclusiveStartKey = JSON.parse(params.pageKey);
+        }
+
+        // Limit items
+        if (params.limit) {
+            query.Limit = params.limit || 100;
+        }
+
+        // Run query
+        this.documentClient.scan(query, callback);
+    }
+
+    getByOrgAndName(params, callback) {
+        const query = {
+            TableName: this.tableName,
+            IndexName: "organisation-name-index"
+        };
+
+        // Filter by organisation
+        query.KeyConditionExpression = "#organisation = :organisation";
+        query.ExpressionAttributeNames = {
+            "#organisation": "organisation",
+        };
+        query.ExpressionAttributeValues = {
+            ":organisation": params.organisation
+        };
+
+        // Filter by name?
+        if (params.name) {
+            query.KeyConditionExpression += " and begins_with(#name, :name)";
+            query.ExpressionAttributeNames["#name"] = "name";
+            query.ExpressionAttributeValues[":name"] = params.name;
+        }
+
+        // Get by page
+        if (params.pageKey) {
+            query.ExclusiveStartKey = JSON.parse(params.pageKey);
+        }
+
+        // Limit items
+        if (params.limit) {
+            query.Limit = params.limit || 100;
+        }
+
+        // Run query
+        this.documentClient.query(query, callback);
     }
 
     getUserByUsername(username, callback) {
