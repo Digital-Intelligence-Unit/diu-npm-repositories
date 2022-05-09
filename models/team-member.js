@@ -4,8 +4,8 @@ class TeamMemberModel extends BaseModel {
 
     create(attributes, callback) {
         // Generate id
-        const id = Math.round((new Date()).getTime() / 1000) + Math.floor(Math.random() * 1e4).toString();
-        attributes._id = id; // eslint-disable-line no-underscore-dangle
+        const id = Math.round(new Date().getTime() / 1000) + Math.floor(Math.random() * 1e4).toString();
+        attributes["_id"] = id;
 
         // Create member
         super.create(attributes, callback);
