@@ -18,7 +18,7 @@ class BaseDDBModel {
                     TableName: this.tableName,
                     Item: this.AWS.DynamoDB.Converter.marshall(attributes),
                 },
-                callback
+                (err, data) => { callback(err, attributes, data); }
             );
         } else {
             // Setup params
@@ -33,7 +33,9 @@ class BaseDDBModel {
             });
 
             // Batch create
-            new this.AWS.DynamoDB().batchWriteItem(params, callback);
+            new this.AWS.DynamoDB().batchWriteItem(params, (err, data) => {
+                callback(err, attributes, data);
+            });
         }
     }
 
@@ -74,7 +76,9 @@ class BaseDDBModel {
     }
 
     update(keys, attributes, callback) {
-        DynamoDBHelper.update(this.documentClient, this.tableName, keys, attributes, callback);
+        DynamoDBHelper.update(this.documentClient, this.tableName, keys, attributes, (err, data) => {
+            callback(err, attributes, data);
+        });
     }
 
     delete(keys, callback) {
