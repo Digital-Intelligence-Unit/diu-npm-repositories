@@ -107,7 +107,7 @@ function addItem(AWS, tablename, newItem, callback) {
     const params = {
         TableName: tablename,
         Item: newItem,
-        ReturnValues: "ALL_NEW",
+        ReturnValues: "ALL_OLD",
     };
     client.putItem(params, callback);
 }

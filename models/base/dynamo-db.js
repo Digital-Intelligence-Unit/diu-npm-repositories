@@ -7,6 +7,32 @@ class BaseDDBModel {
     constructor(AWS = null) {
         this.AWS = AWS || require("../../config/database").connections.dynamodb;
         this.documentClient = new this.AWS.DynamoDB.DocumentClient();
+        this.dynamodb = new this.AWS.DynamoDB();
+    }
+
+    getAllTables(callback) {
+        this.dynamodb.listTables({}, function (err, data) {
+            if (err) {
+                console.log(err, err.stack);
+            } else {
+                callback(data);
+            }
+        });
+    }
+
+    getTableSchema(tableName) {
+        const _self = this;
+        return new Promise(function (resolve, reject) {
+            _self.dynamodb.describeTable({ TableName: tableName }, function (err, data) {
+                if (err) {
+                    // console.error("Unable to describe table. Error JSON:", JSON.stringify(err, null, 2));
+                    reject(err);
+                } else {
+                    // callback(data);
+                    resolve(data);
+                }
+            });
+        });
     }
 
     create(attributes, callback) {
@@ -18,7 +44,9 @@ class BaseDDBModel {
                     TableName: this.tableName,
                     Item: this.AWS.DynamoDB.Converter.marshall(attributes),
                 },
-                (err, data) => { callback(err, attributes, data); }
+                (err, data) => {
+                    callback(err, attributes, data);
+                }
             );
         } else {
             // Setup params
@@ -31,7 +59,6 @@ class BaseDDBModel {
                     },
                 });
             });
-
             // Batch create
             new this.AWS.DynamoDB().batchWriteItem(params, (err, data) => {
                 callback(err, attributes, data);

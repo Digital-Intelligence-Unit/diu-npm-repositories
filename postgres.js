@@ -56,8 +56,11 @@ FROM (
         if (error) {
             const errResponse = "Error: " + error;
             callback(errResponse, null);
+        } else if (results.rows) {
+            callback(null, results.rows);
+        } else {
+            callback(null, []);
         }
-        callback(null, results.rows);
     });
 }
 

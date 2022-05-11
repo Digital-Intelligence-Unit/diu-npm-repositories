@@ -7,6 +7,8 @@ const Methods = {
 
 // Models
 const Models = {
+    BaseDDBModel: require("./models/base/dynamo-db"),
+
     UserModel: require("./models/user"),
     UserProfileModel: require("./models/user-profile"),
     FormSubmissionModel: require("./models/form-submission"),
@@ -37,6 +39,12 @@ const Models = {
     // To be removed
     UserRoleModel: require("./models/user-role"),
     TeamRoleModel: require("./models/team-role"),
+
+    //Moved over
+    AppModel: require("./models/apps"),
+    DashboardsModel: require("./models/dashboards"),
+    NewsfeedsModel: require("./models/newsfeeds"),
+    TeamRequestsModel: require("./models/team-requests"),
 };
 
 // Helpers

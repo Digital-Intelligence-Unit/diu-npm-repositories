@@ -17,7 +17,6 @@ class AccessLog extends BaseModel {
                 data: newAttributes.data,
             };
         };
-
         // Is array?
         if (!(attributes instanceof Array)) {
             // Create single
@@ -27,7 +26,6 @@ class AccessLog extends BaseModel {
             attributes.forEach((model, index, models) => {
                 models[index] = accessor(model);
             });
-
             // Batch create
             super.create(attributes, callback);
         }
