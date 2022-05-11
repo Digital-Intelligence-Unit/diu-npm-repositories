@@ -2,9 +2,9 @@ const SecretsManager = require("aws-sdk/clients/secretsmanager");
 class Aws {
     static async getSecrets(secretName) {
         const clientparams = { region: process.env.AWSREGION || "eu-west-2" };
-        if (process.env.AWSOPSID && process.env.AWSOPSKEY) {
-            clientparams["accessKeyId"] = process.env.AWSOPSID;
-            clientparams["secretAccessKey"] = process.env.AWSOPSKEY;
+        if (process.env.AWS_SECRETID && process.env.AWS_SECRETID) {
+            clientparams["accessKeyId"] = process.env.AWS_SECRETID;
+            clientparams["secretAccessKey"] = process.env.AWS_SECRETKEY;
         }
         const client = new SecretsManager(clientparams);
 
@@ -25,9 +25,9 @@ class Aws {
 
     getSecretsAsync(secretName, callback) {
         const clientparams = { region: process.env.AWSREGION || "eu-west-2" };
-        if (process.env.AWSOPSID && process.env.AWSOPSKEY) {
-            clientparams["accessKeyId"] = process.env.AWSOPSID;
-            clientparams["secretAccessKey"] = process.env.AWSOPSKEY;
+        if (process.env.AWS_SECRETID && process.env.AWS_SECRETID) {
+            clientparams["accessKeyId"] = process.env.AWS_SECRETID;
+            clientparams["secretAccessKey"] = process.env.AWS_SECRETKEY;
         }
         const client = new SecretsManager(clientparams);
         client.getSecretValue({ SecretId: secretName }, (err, data) => {
