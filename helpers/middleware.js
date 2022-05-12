@@ -82,11 +82,11 @@ class Middleware {
                     if (userAuthorised) {
                         next();
                     } else {
-                        res.status(401).json({ success: false, msg: "You're unauthorised to make this request!" });
+                        res.status(403).json({ success: false, msg: "You're unauthorised to make this request!" });
                     }
                 });
             } catch (e) {
-                res.status(401).json({ success: false, msg: "An error occurred authorising your request" });
+                res.status(500).json({ success: false, msg: "An error occurred authorising your request" });
             }
         };
     }
