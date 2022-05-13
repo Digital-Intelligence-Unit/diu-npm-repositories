@@ -53,24 +53,28 @@ class Middleware {
                 // Parse JWT from user
                 const user = JWT.decode(req.header("authorization").replace("JWT ", ""));
                 const userCapabilities = user.capabilities.map((item) => Object.keys(item)[0]);
-                let userAuthorised = true;
+                let userAuthorised = false;
+                let authorisedCapability = capabilities.slice(-1).pop(); // Default to last capability
 
-                // Create access log
+                // Initialise access log
                 const accessLogs = [];
+
                 capabilities.forEach((capability) => {
                     // Check if capability authorised
-                    const capabilityAuthorised = userCapabilities.includes(capability);
-                    userAuthorised = userAuthorised === false ? false : capabilityAuthorised;
+                    if (userCapabilities.includes(capability)) {
+                        userAuthorised = true;
+                        authorisedCapability = capability;
+                    }
+                });
 
-                    // Add log
-                    accessLogs.push({
-                        type: `Capability${capabilityAuthorised ? "Authorised" : "Unauthorised"}#${capability}`,
-                        user: {
-                            username: user.username,
-                            organisation: user.organisation,
-                        },
-                        data: { capability },
-                    });
+                // Create access log
+                accessLogs.push({
+                    type: `Capability${userAuthorised ? "Authorised" : "Unauthorised"}#${authorisedCapability}`,
+                    user: {
+                        username: user.username,
+                        organisation: user.organisation,
+                    },
+                    data: { authorisedCapability },
                 });
 
                 // Persist logs and respond
