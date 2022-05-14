@@ -29,6 +29,20 @@ function getItemByKey(AWS, tablename, keyname, keyvalue, callback) {
     docClient.query(params, callback);
 }
 
+function getItemByKeys(AWS, tablename, keynames, keyvalues, callback) {
+    const docClient = new AWS.DynamoDB.DocumentClient();
+    const KeyConditionExpression = "#" + keynames[0] + " = :" + keynames[0] + " AND #" + keynames[1] + " = :" + keynames[1];
+    const ExpressionAttributeNames = updateexpressionnames(keynames);
+    const ExpressionAttributeValues = newexpressions(keynames, keyvalues);
+    const params = {
+        TableName: tablename,
+        KeyConditionExpression,
+        ExpressionAttributeNames,
+        ExpressionAttributeValues,
+    };
+    docClient.query(params, callback);
+}
+
 function getItemByIndex(AWS, tablename, keyname, keyvalue, callback) {
     const docClient = new AWS.DynamoDB.DocumentClient();
     const KeyConditionExpression = "#" + keyname + " = :" + keyname;
@@ -216,6 +230,8 @@ function selectFunction(functionname) {
             return updateArchive;
         case "getItemByKey":
             return getItemByKey;
+        case "getItemByKeys":
+            return getItemByKeys;
         case "getItemByIndex":
             return getItemByIndex;
         case "getAllByFilter":
@@ -241,6 +257,7 @@ module.exports.All = {
     getItemByType,
     updateArchive,
     getItemByKey,
+    getItemByKeys,
     getItemByIndex,
     getAllByFilter,
     getItemByDualIndex,
