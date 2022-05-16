@@ -1,6 +1,6 @@
 {
     "name": "diu-data-functions",
-    "version": "1.2.14",
+    "version": "1.2.15",
     "description": "NPM Repository for common data and database functions across applications",
     "main": "index.js",
     "dependencies": {

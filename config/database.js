@@ -20,7 +20,7 @@ config.connections.clinicaltrials = new pg.Pool({
     user: "morgans3",
     host: "aact-db.ctti-clinicaltrials.org",
     database: "aact",
-    password: process.env.JWT_SECRETKEY,
+    password: process.env.NICEAPI_KEY,
     port: "5432",
 });
 
