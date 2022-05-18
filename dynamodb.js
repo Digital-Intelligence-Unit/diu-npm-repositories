@@ -131,6 +131,7 @@ function removeItem(AWS, tablename, key, callback) {
     const getparams = {
         TableName: tablename,
         Key: key,
+        ReturnValues: "ALL_OLD",
     };
     docClient.delete(getparams, (err, result) => {
         if (err) callback(err, { status: 400, msg: err });

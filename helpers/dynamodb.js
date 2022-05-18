@@ -33,6 +33,7 @@ class DynamoDB {
             {
                 TableName: tableName,
                 Key: keys,
+                ReturnValues: "ALL_OLD",
             },
             callback
         );
