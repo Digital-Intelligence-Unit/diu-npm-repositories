@@ -51,6 +51,10 @@ class Stringg {
 
         return sidString;
     }
+
+    static ucfirst(uncapitalisedString) {
+        return uncapitalisedString.charAt(0).toUpperCase() + uncapitalisedString.slice(1);
+    }
 }
 
 module.exports = Stringg;

@@ -9,6 +9,7 @@ module.exports = {
         account_request_approve: "https://" + fullSite + "/support/access-request/approve",
         account_request_deny: "https://" + fullSite + "/support/access-request/deny",
         sign_acknowledgement: "https://messaging." + fullApi + "/acknowledgements/confirmack",
+        view_request: "https://" + fullApi + "/admin/requests",
     },
     message_template: `
         <style>

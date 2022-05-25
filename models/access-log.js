@@ -1,4 +1,5 @@
 const BaseModel = require("./base/dynamo-db");
+const Luxon = require("luxon");
 const uuid = require("uuid");
 class AccessLog extends BaseModel {
     tableName = "access_logs";
@@ -9,11 +10,11 @@ class AccessLog extends BaseModel {
         // Accessor function
         const accessor = (newAttributes) => {
             return {
-                date: new Date().toISOString().split("T")[0],
-                uuid: new Date().toISOString().substr(11, 8) + "#" + uuid.v1(),
+                date: Luxon.DateTime.now().toISODate(),
+                uuid: Luxon.DateTime.now().toFormat("H:m:s") + "#" + uuid.v1(),
                 "username#org": `${newAttributes.user.username}#${newAttributes.user.organisation}`,
                 type: newAttributes.type,
-                time: new Date().toISOString().substr(11, 8),
+                time: Luxon.DateTime.now().toFormat("H:m:s"),
                 data: newAttributes.data,
             };
         };
