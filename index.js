@@ -47,6 +47,7 @@ const Helpers = {
     Middleware: require("./helpers/middleware"),
     Email: require("./helpers/email"),
     Validator: require("./helpers/validator"),
+    MsTeams: require("./helpers/ms-teams")
 };
 
 // Exports
