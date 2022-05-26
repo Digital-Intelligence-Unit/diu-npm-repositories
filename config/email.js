@@ -3,11 +3,6 @@ const fullSite = ((process.env.AWSPROFILE || "Dev") === "Dev" ? "dev." : "www.")
 const fullApi = ((process.env.AWSPROFILE || "Dev") === "Dev" ? "dev." : "") + site;
 
 module.exports = {
-    // account: {
-    //     host: process.env.EMAIL_HOST,
-    //     email: process.env.EMAIL_USERNAME,
-    //     password: process.env.EMAIL_PASSWORD
-    // },
     message_actions: {
         home_page: "https://" + fullSite,
         account_request: "https://" + fullSite + "/support/access-request",
