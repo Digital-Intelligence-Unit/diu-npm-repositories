@@ -62,7 +62,10 @@ class CapabilityModel extends BaseModel {
 
     getAllCapabilitiesFromTeamArrayAndUserID(arrTeamIDs, strUsername, callback) {
         const values = [strUsername].concat(arrTeamIDs);
-        const teamClause = arrTeamIDs.map((teamID, i) => `link_id = $${i + 2}`).join(" OR ");
+        let teamClause = "link_id IS NULL";
+        if (arrTeamIDs.length) {
+            teamClause = arrTeamIDs.map((teamID, i) => `link_id = $${i + 2}`).join(" OR ");
+        }
         const text = `(
                 SELECT * FROM capability_links
                 LEFT JOIN ${this.tableName}
