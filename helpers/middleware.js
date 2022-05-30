@@ -86,7 +86,11 @@ class Middleware {
                     if (userAuthorised) {
                         next();
                     } else {
-                        res.status(403).json({ success: false, msg: "You're unauthorised to make this request!" });
+                        res.status(403).json({
+                            success: false,
+                            msg: "You're unauthorised to make this request!",
+                            data: capabilities
+                        });
                     }
                 });
             } catch (e) {

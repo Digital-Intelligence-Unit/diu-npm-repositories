@@ -1,25 +1,41 @@
 const BaseModel = require("./base/dynamo-db");
+const StringHelper = require("../helpers/string");
 class TeamModel extends BaseModel {
     tableName = "teams";
 
     getByFilters(filters, callback) {
-        // Todo: Refactor
-        if (filters.orgcode && filters.name) {
-            const filter = "contains(#name, :name) and #organisationcode = :organisationcode";
-            require("../dynamodb").All.getAllByFilterValues(
-                this.AWS,
-                this.tableName,
-                filter,
-                ["name", "organisationcode"],
-                [filters.name, filters.orgcode],
-                callback
-            );
-        } else if (filters.name) {
-            const filter = "contains(#name, :name)";
-            require("../dynamodb").All.getAllByFilterValue(this.AWS, this.tableName, filter, "name", filters.name, callback);
-        } else {
-            super.get(callback);
+        // Initialise query
+        const query = { TableName: this.tableName };
+
+        // Has filters?
+        if (Object.values(filters).length > 0) {
+            query.ExpressionAttributeNames = {};
+            query.ExpressionAttributeValues = {};
+            query.FilterExpression = [];
         }
+
+        // Filter by name
+        if (filters.name) {
+            query.ExpressionAttributeNames["#name"] = "name";
+            query.ExpressionAttributeValues[":name"] = filters.name;
+            query.ExpressionAttributeValues[":name_uc"] = StringHelper.ucfirst(filters.name);
+            query.FilterExpression.push("(contains(#name, :name) OR contains(#name, :name_uc))");
+        }
+
+        // Filter by orgcode
+        if (filters.orgcode) {
+            query.ExpressionAttributeNames["#organisationcode"] = "organisationcode";
+            query.ExpressionAttributeValues[":organisationcode"] = filters.orgcode;
+            query.FilterExpression.push("#organisationcode = :organisationcode");
+        }
+
+        // Join filters
+        if (query.FilterExpression) {
+            query.FilterExpression = query.FilterExpression.join(" and ");
+        }
+
+        // Run query
+        this.documentClient.scan(query, callback);
     }
 
     getByCode(code, callback) {

@@ -1,21 +1,26 @@
 {
     "name": "diu-data-functions",
-    "version": "1.2.17",
+    "version": "1.2.21",
     "description": "NPM Repository for common data and database functions across applications",
     "main": "index.js",
     "dependencies": {
         "activedirectory": "^0.7.2",
+        "adaptive-expressions": "^4.16.0",
+        "adaptivecards-templating": "^2.2.0",
         "aws-sdk": "^2.540.0",
         "bcryptjs": "~2.4.3",
         "crypto-js": "^4.1.1",
         "fastest-validator": "^1.12.0",
         "jsonwebtoken": "^8.5.1",
+        "luxon": "^2.4.0",
+        "ms-teams-webhook": "^1.0.4",
         "nodemailer": "^6.7.3",
         "pg": "^8.7.3",
         "request": "^2.88.2"
     },
     "devDependencies": {
         "@types/crypto-js": "^4.1.1",
+        "@types/luxon": "^2.3.2",
         "eslint": "^8.14.0",
         "eslint-config-standard": "^17.0.0",
         "eslint-plugin-import": "^2.26.0",
