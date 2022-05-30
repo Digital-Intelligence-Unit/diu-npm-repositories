@@ -19,6 +19,7 @@ class CapabilityLinkModel extends BaseModel {
                             link_id: metadata.id,
                             link_type: metadata.type,
                             approved_by: metadata.approved_by,
+                            valueJSON: metadata.valueJSON,
                         },
                         (error) => {
                             if (error) {

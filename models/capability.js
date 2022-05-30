@@ -60,10 +60,13 @@ class CapabilityModel extends BaseModel {
         this.query({ text: query, values: [type].concat(typeId) }, callback);
     }
 
-    // Not sure one the use case for this...?
     getAllCapabilitiesFromTeamArrayAndUserID(arrTeamIDs, strUsername, callback) {
-        if (arrTeamIDs.length && strUsername) {
-            let query = `(
+        const values = [strUsername].concat(arrTeamIDs);
+        let teamClause = "link_id IS NULL";
+        if (arrTeamIDs.length) {
+            teamClause = arrTeamIDs.map((teamID, i) => `link_id = $${i + 2}`).join(" OR ");
+        }
+        const text = `(
                 SELECT * FROM capability_links
                 LEFT JOIN ${this.tableName}
                 ON capability_links.capability_id = ${this.tableName}.id
@@ -73,17 +76,7 @@ class CapabilityModel extends BaseModel {
                         SELECT CAST(role_id AS varchar) FROM roles
                         RIGHT JOIN role_links
                         ON roles.id = role_links.role_id
-                        WHERE link_type = 'team'`;
-            let teamCounter = 0;
-            arrTeamIDs.forEach((teamID) => {
-                if (teamCounter) {
-                    query += ` OR link_id = $${teamCounter + 1}`;
-                } else {
-                    query += ` AND (link_id = $${teamCounter + 1}`;
-                }
-                teamCounter++;
-            });
-            query += `)
+                        WHERE link_type = 'team' AND (${teamClause})
                     )
                     OR
                     link_id IN (
@@ -91,7 +84,7 @@ class CapabilityModel extends BaseModel {
                         RIGHT JOIN role_links
                         ON roles.id = role_links.role_id
                         WHERE link_type = 'user'
-                        AND link_id = $3
+                        AND link_id = $1
                     )
                 )
             )
@@ -100,17 +93,7 @@ class CapabilityModel extends BaseModel {
                 SELECT * FROM capability_links
                 LEFT JOIN ${this.tableName}
                 ON capability_links.capability_id = ${this.tableName}.id
-                WHERE link_type = 'team'`;
-            teamCounter = 0;
-            arrTeamIDs.forEach((teamID) => {
-                if (teamCounter) {
-                    query += ` OR link_id = $${teamCounter + 1}`;
-                } else {
-                    query += ` AND (link_id = $${teamCounter + 1}`;
-                }
-                teamCounter++;
-            });
-            query += `)
+                WHERE link_type = 'team' AND (${teamClause})
             )
             UNION ALL
             (
@@ -118,11 +101,9 @@ class CapabilityModel extends BaseModel {
                 LEFT JOIN ${this.tableName}
                 ON capability_links.capability_id = ${this.tableName}.id
                 WHERE link_type = 'user'
-                AND link_id = $3
+                AND link_id = $1
             )`;
-            arrTeamIDs.push(strUsername);
-            this.query({ text: query, values: arrTeamIDs }, callback);
-        }
+        this.query({ text, values }, callback);
     }
 }
 
