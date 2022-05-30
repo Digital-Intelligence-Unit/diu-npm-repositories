@@ -15,11 +15,11 @@ class CapabilityLinkModel extends BaseModel {
                 .forEach((capability) => {
                     this.create(
                         {
-                            capability_id: capability,
+                            capability_id: capability.id,
                             link_id: metadata.id,
                             link_type: metadata.type,
                             approved_by: metadata.approved_by,
-                            valueJSON: metadata.valueJSON,
+                            valueJSON: capability.valueJSON,
                         },
                         (error) => {
                             if (error) {
