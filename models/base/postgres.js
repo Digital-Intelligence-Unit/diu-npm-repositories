@@ -110,7 +110,8 @@ class BasePostgresModel {
 
     deleteByPrimaryKey(primaryKeyValue, callback) {
         // Build query
-        const query = `DELETE FROM ${this.tableName} WHERE ${this.primaryKey} = '${primaryKeyValue}'`;
+        const query = `DELETE FROM ${this.tableName} WHERE ${this.primaryKey} = '${primaryKeyValue}' RETURNING *`;
+
         // Make update
         this.query(query, callback);
     }

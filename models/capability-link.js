@@ -2,6 +2,26 @@ const BaseModel = require("./base/postgres");
 class CapabilityLinkModel extends BaseModel {
     tableName = "capability_links";
 
+    create(attributes, callback) {
+        // Check whether link exists
+        this.query(
+            {
+                text: "SELECT * FROM capability_links WHERE capability_id = $1 AND link_type = $2 AND link_id = $3",
+                values: [attributes.capability_id, attributes.link_type, attributes.link_id],
+            },
+            (error, capabilities) => {
+                if (error) { callback(error, null); }
+
+                // Update if link does exist
+                if (capabilities.length > 0) {
+                    super.updateByPrimaryKey(capabilities[0].id, attributes, callback);
+                } else {
+                    super.create(attributes, callback);
+                }
+            }
+        );
+    }
+
     link(capabilities, metadata, callback) {
         // Get existing rows
         this.getByTypeId(metadata.type, metadata.id, (err, links) => {
