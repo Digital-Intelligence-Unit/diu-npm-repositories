@@ -2,25 +2,6 @@ const BaseModel = require("./base/dynamo-db");
 class FormSubmissionModel extends BaseModel {
     tableName = "form_submissions";
 
-    update(id, item, callback) {
-        const params = {
-            TableName: this.tableName,
-            Key: { id },
-            UpdateExpression: "set #data.approved = :approved",
-            ExpressionAttributeNames: {
-                "#data": "data",
-            },
-            ExpressionAttributeValues: {
-                ":approved": item.approved,
-            },
-            ReturnValues: "ALL_NEW",
-        };
-        // @ts-ignore
-        this.documentClient.update(params, (error, data) => {
-            callback(error, data.Attributes || null);
-        });
-    }
-
     get(params, callback) {
         const query = {
             TableName: this.tableName,

@@ -22,16 +22,15 @@ class CapabilityLinkModel extends BaseModel {
         );
     }
 
-    link(capabilities, metadata, callback) {
+    link(newCapabilities, metadata, callback) {
         // Get existing rows
         this.getByTypeId(metadata.type, metadata.id, (err, links) => {
-            if (err) {
-                callback(err, null);
-            }
+            if (err) { callback(err, null); }
+
             // Create new links
-            const currentCapabilities = links.map((l) => l.capability_id);
-            capabilities
-                .filter((c) => !currentCapabilities.includes(c))
+            const currentCapabilityIds = links.map((l) => l.capability_id);
+            newCapabilities
+                .filter((c) => !currentCapabilityIds.includes(c.capability_id))
                 .forEach((capability) => {
                     this.create(
                         {
@@ -50,7 +49,8 @@ class CapabilityLinkModel extends BaseModel {
                 });
 
             // Delete old links
-            const oldCapabilities = links.filter((l) => !capabilities.includes(l.capability_id));
+            const newCapabilityIds = newCapabilities.map((l) => l.id);
+            const oldCapabilities = links.filter((l) => !newCapabilityIds.includes(l.capability_id));
             if (oldCapabilities.length > 0) {
                 this.query(
                     {
@@ -64,7 +64,7 @@ class CapabilityLinkModel extends BaseModel {
                 );
             }
 
-            callback(null, capabilities);
+            callback(null, newCapabilities);
         });
     }
 

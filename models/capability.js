@@ -42,8 +42,11 @@ class CapabilityModel extends BaseModel {
     getByLinkId(type, typeId, callback) {
         this.query(
             {
-                text: `SELECT ${this.tableName}.*, capability_links.link_type, capability_links.link_id FROM ${this.tableName}
-                RIGHT JOIN capability_links ON capabilities.id = capability_links.capability_id WHERE link_type = $1 AND link_id = $2`,
+                text: `SELECT ${this.tableName}.*, capability_links.link_type, capability_links.link_id, capability_links.valuejson 
+                FROM ${this.tableName}
+                RIGHT JOIN capability_links 
+                ON capabilities.id = capability_links.capability_id 
+                WHERE link_type = $1 AND link_id = $2`,
                 values: [type, typeId.toString()],
             },
             callback
@@ -52,11 +55,11 @@ class CapabilityModel extends BaseModel {
 
     getByLinkIds(type, typeId, callback) {
         const query =
-            `SELECT ${this.tableName}.*, capability_links.link_type, capability_links.link_id
-                     FROM ${this.tableName} RIGHT JOIN capability_links ON ${this.tableName}.id = capability_links.capability_id
-                     WHERE link_type = $1 AND link_id IN (` +
-            typeId.map((u, i) => "$" + (i + 2)) +
-            ")";
+            `SELECT ${this.tableName}.*, capability_links.link_type, capability_links.link_id, capability_links.valuejson
+             FROM ${this.tableName} RIGHT JOIN capability_links ON ${this.tableName}.id = capability_links.capability_id
+             WHERE link_type = $1 AND link_id IN (` +
+                typeId.map((u, i) => "$" + (i + 2)) +
+             ")";
         this.query({ text: query, values: [type].concat(typeId) }, callback);
     }
 
