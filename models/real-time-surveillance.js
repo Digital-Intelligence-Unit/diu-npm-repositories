@@ -17,6 +17,50 @@ class RealTimeSurveillance extends BaseModel {
         };
         this.documentClient.query(params, callback);
     }
+
+    create(attributes, callback) {
+        attributes = this.prepareData(attributes);
+        super.create(attributes, callback);
+    }
+
+    update(attributes, callback) {
+        attributes = this.prepareData(attributes);
+        const keys = {
+            index: attributes.index,
+            date_of_birth: attributes.date_of_birth,
+        };
+        delete attributes.index;
+        delete attributes.date_of_birth;
+        super.update(keys, attributes, callback);
+    }
+
+    prepareData(attributes) {
+        let age;
+        if (attributes.date) {
+            age = this.dateDiffInYears(new Date(attributes.date_of_birth), new Date(attributes.date));
+        } else {
+            age = this.dateDiffInYears(new Date(attributes.date_of_birth), new Date());
+        }
+        if (age) attributes.age = age;
+        return attributes;
+    }
+
+    dateDiffInYears(dateold, datenew) {
+        const ynew = datenew.getFullYear();
+        const mnew = datenew.getMonth();
+        const dnew = datenew.getDate();
+        const yold = dateold.getFullYear();
+        const mold = dateold.getMonth();
+        const dold = dateold.getDate();
+        let diff = ynew - yold;
+        if (mold > mnew) diff--;
+        else {
+            if (mold === mnew) {
+                if (dold > dnew) diff--;
+            }
+        }
+        return diff;
+    }
 }
 
 module.exports = RealTimeSurveillance;
