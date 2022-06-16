@@ -29,6 +29,7 @@ const Models = {
     AtomicFormDataModel: require("./models/atomic-formdata"),
     AtomicPayloadsModel: require("./models/atomic-payloads"),
     SpiIncidentMethods: require("./models/spi_incident_methods"),
+    RealTimeSurveillance: require("./models/real-time-surveillance"),
 
     ActiveDirectoryModel: require("./models/active-directory"),
     ConfluenceModel: require("./models/confluence"),
@@ -47,7 +48,7 @@ const Helpers = {
     Middleware: require("./helpers/middleware"),
     Email: require("./helpers/email"),
     Validator: require("./helpers/validator"),
-    MsTeams: require("./helpers/ms-teams")
+    MsTeams: require("./helpers/ms-teams"),
 };
 
 // Exports
