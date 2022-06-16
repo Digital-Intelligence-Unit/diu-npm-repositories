@@ -4,7 +4,7 @@ class CohortModel extends BaseModel {
     tableName = "cohorts";
 
     accessor(attributes) {
-        attributes["_id"] = uuid.v1();
+        attributes.id = uuid.v1();
         return attributes;
     }
 
