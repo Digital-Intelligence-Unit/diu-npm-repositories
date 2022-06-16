@@ -57,7 +57,7 @@ class BaseDDBModel {
                 ScannedCount: output.ScannedCount + result.ScannedCount,
             };
             if (typeof result.LastEvaluatedKey != "undefined") {
-                this.get(callback, result, result.LastEvaluatedKey);
+                this.get(callback, output, result.LastEvaluatedKey);
             } else {
                 callback(null, output);
             }
