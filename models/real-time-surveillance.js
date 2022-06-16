@@ -35,13 +35,9 @@ class RealTimeSurveillance extends BaseModel {
     }
 
     prepareData(attributes) {
-        let age;
-        if (attributes.date) {
-            age = this.dateDiffInYears(new Date(attributes.date_of_birth), new Date(attributes.date));
-        } else {
-            age = this.dateDiffInYears(new Date(attributes.date_of_birth), new Date());
-        }
-        if (age) attributes.age = age;
+        attributes.date
+            ? (attributes.age = this.dateDiffInYears(new Date(attributes.date_of_birth), new Date(attributes.date)))
+            : (attributes.age = this.dateDiffInYears(new Date(attributes.date_of_birth), new Date()));
         return attributes;
     }
 

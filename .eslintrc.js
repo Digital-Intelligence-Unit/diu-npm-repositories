@@ -16,7 +16,7 @@ module.exports = {
         complexity: "off",
         "constructor-super": "off",
         "dot-notation": "off",
-        eqeqeq: ["error", "smart"],
+        eqeqeq: ["error"],
         "guard-for-in": "off",
         "id-denylist": ["error", "any", "Number", "number", "String", "string", "Boolean", "boolean", "Undefined", "undefined"],
         "id-match": "error",
@@ -85,7 +85,7 @@ module.exports = {
         "one-var": ["error", "never"],
         "prefer-const": "error",
         "quote-props": ["error", "as-needed"],
-        quotes: ["error", "double"],
+        quotes: ["error", "double", { allowTemplateLiterals: true }],
         "spaced-comment": [
             "error",
             "always",

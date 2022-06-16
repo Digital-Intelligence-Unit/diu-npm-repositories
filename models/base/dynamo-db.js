@@ -50,16 +50,19 @@ class BaseDDBModel {
         }
         let output = previousresults || { Items: [], Count: 0, ScannedCount: 0 };
         this.documentClient.scan(params, (err, result) => {
-            if (err) console.error(err);
-            output = {
-                Items: output.Items.concat(result.Items),
-                Count: output.Count + result.Count,
-                ScannedCount: output.ScannedCount + result.ScannedCount,
-            };
-            if (typeof result.LastEvaluatedKey != "undefined") {
-                this.get(callback, output, result.LastEvaluatedKey);
-            } else {
-                callback(null, output);
+            if (err) callback(err, null);
+            else {
+                output = {
+                    Items: output.Items.concat(result.Items),
+                    Count: output.Count + result.Count,
+                    ScannedCount: output.ScannedCount + result.ScannedCount,
+                };
+
+                if (typeof result.LastEvaluatedKey !== "undefined") {
+                    this.get(callback, output, result.LastEvaluatedKey);
+                } else {
+                    callback(null, output);
+                }
             }
         });
     }
