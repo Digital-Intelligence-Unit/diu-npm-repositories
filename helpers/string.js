@@ -17,10 +17,11 @@ class Stringg {
                 return s;
             }
         };
-        let asc; let end;
+        let asc;
+        let end;
         let i;
 
-        if (buf == null) {
+        if (buf === null) {
             return null;
         }
 

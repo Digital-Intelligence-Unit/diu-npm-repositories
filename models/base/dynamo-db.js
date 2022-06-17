@@ -18,7 +18,9 @@ class BaseDDBModel {
                     TableName: this.tableName,
                     Item: this.AWS.DynamoDB.Converter.marshall(attributes),
                 },
-                (err, data) => { callback(err, attributes, data); }
+                (err, data) => {
+                    callback(err, attributes, data);
+                }
             );
         } else {
             // Setup params
@@ -39,13 +41,30 @@ class BaseDDBModel {
         }
     }
 
-    get(callback) {
-        this.documentClient.scan(
-            {
-                TableName: this.tableName,
-            },
-            callback
-        );
+    get(callback, previousresults, LastEvaluatedKey) {
+        const params = {
+            TableName: this.tableName,
+        };
+        if (LastEvaluatedKey) {
+            params.ExclusiveStartKey = LastEvaluatedKey;
+        }
+        let output = previousresults || { Items: [], Count: 0, ScannedCount: 0 };
+        this.documentClient.scan(params, (err, result) => {
+            if (err) callback(err, null);
+            else {
+                output = {
+                    Items: output.Items.concat(result.Items),
+                    Count: output.Count + result.Count,
+                    ScannedCount: output.ScannedCount + result.ScannedCount,
+                };
+
+                if (typeof result.LastEvaluatedKey !== "undefined") {
+                    this.get(callback, output, result.LastEvaluatedKey);
+                } else {
+                    callback(null, output);
+                }
+            }
+        });
     }
 
     getByKeys(tableKeys, callback) {
