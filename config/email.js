@@ -6,8 +6,7 @@ module.exports = {
     message_actions: {
         home_page: "https://" + fullSite,
         account_request: "https://" + fullSite + "/support/access-request",
-        account_request_approve: "https://" + fullSite + "/support/access-request/approve",
-        account_request_deny: "https://" + fullSite + "/support/access-request/deny",
+        account_request_action: "https://" + fullSite + "/support/access-request/action",
         sign_acknowledgement: "https://messaging." + fullApi + "/acknowledgements/confirmack",
         view_request: "https://" + fullApi + "/admin/requests",
     },

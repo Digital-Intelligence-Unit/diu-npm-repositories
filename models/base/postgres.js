@@ -88,7 +88,9 @@ class BasePostgresModel {
     getByPrimaryKey(primaryKeyValue, callback) {
         // Select all
         const query = `SELECT * FROM ${this.tableName} WHERE ${this.primaryKey} = $1`;
-        this.query({ text: query, values: [primaryKeyValue] }, callback);
+        this.query({ text: query, values: [primaryKeyValue] }, (err, result) => {
+            callback(err, result ? result[0] : null);
+        });
     }
 
     updateByPrimaryKey(primaryKeyValue, attributes, callback) {
@@ -113,7 +115,9 @@ class BasePostgresModel {
         const query = `DELETE FROM ${this.tableName} WHERE ${this.primaryKey} = '${primaryKeyValue}' RETURNING *`;
 
         // Make update
-        this.query(query, callback);
+        this.query(query, (err, result) => {
+            callback(err, result[0] || null);
+        });
     }
 
     delete(keys, callback) {}

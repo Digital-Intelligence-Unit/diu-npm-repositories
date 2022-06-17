@@ -62,13 +62,7 @@ class RoleModel extends BaseModel {
         );
 
         // Delete role
-        this.query(
-            {
-                text: `DELETE FROM ${this.tableName} WHERE ${this.primaryKey} = $1`,
-                values: [primaryKeyValue],
-            },
-            callback
-        );
+        super.deleteByPrimaryKey(primaryKeyValue, callback);
     }
 
     // Not sure on use case for this...?
