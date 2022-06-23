@@ -70,7 +70,7 @@ class AccessLog extends BaseModel {
         };
 
         // Filter by date
-        query.KeyConditionExpression = "#user = :user";
+        query.KeyConditionExpression = "begins_with(#user = :user)";
         query.ExpressionAttributeNames = {
             "#user": "username#org",
         };
@@ -107,7 +107,7 @@ class AccessLog extends BaseModel {
         };
 
         // Filter by type
-        query.KeyConditionExpression = "#type = :type";
+        query.KeyConditionExpression = "begins_with(#type = :type)";
         query.ExpressionAttributeNames = {
             "#type": "type",
         };
