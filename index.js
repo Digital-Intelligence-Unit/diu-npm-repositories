@@ -34,10 +34,6 @@ const Models = {
     ActiveDirectoryModel: require("./models/active-directory"),
     ConfluenceModel: require("./models/confluence"),
     ClinicalTrialModel: require("./models/clinical-trial"),
-
-    // To be removed
-    UserRoleModel: require("./models/user-role"),
-    TeamRoleModel: require("./models/team-role"),
 };
 
 // Helpers

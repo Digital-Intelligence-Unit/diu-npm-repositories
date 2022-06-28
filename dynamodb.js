@@ -158,15 +158,6 @@ function updateItem(AWS, tablename, filters, updatedItem, callback) {
     docClient.update(params, callback);
 }
 
-function updateArchive(AWS, tablename, updatedItem, callback) {
-    const client = new AWS.DynamoDB();
-    const params = {
-        TableName: tablename + "_archive",
-        Item: updatedItem,
-    };
-    client.putItem(params, callback);
-}
-
 function setkeys(fields, item) {
     const exp = {};
     fields.forEach((val) => {
@@ -227,8 +218,6 @@ function selectFunction(functionname) {
             return getAll;
         case "getItemByType":
             return getItemByType;
-        case "updateArchive":
-            return updateArchive;
         case "getItemByKey":
             return getItemByKey;
         case "getItemByKeys":
@@ -256,7 +245,6 @@ module.exports.All = {
     addItem,
     getAll,
     getItemByType,
-    updateArchive,
     getItemByKey,
     getItemByKeys,
     getItemByIndex,
