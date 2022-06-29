@@ -6,8 +6,8 @@ class CapabilityLinkModel extends BaseModel {
         // Check whether link exists
         this.query(
             {
-                text: "SELECT * FROM capability_links WHERE capability_id = $1 AND link_type = $2 AND link_id = $3",
-                values: [attributes.capability_id, attributes.link_type, attributes.link_id],
+                text: "SELECT * FROM capability_links WHERE capability_id = $1 AND link_type = $2 AND link_id = $3 AND valuejson = $4",
+                values: [attributes.capability_id, attributes.link_type, attributes.link_id, attributes.valuejson || null],
             },
             (error, capabilities) => {
                 if (error) { callback(error, null); }
