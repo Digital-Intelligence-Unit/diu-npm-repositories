@@ -1,11 +1,11 @@
 const BaseModel = require("./base/dynamo-db");
+const uuid = require("uuid");
 class TeamMemberModel extends BaseModel {
     tableName = "teammembers";
 
     create(attributes, callback) {
         // Generate id
-        const id = Math.round(new Date().getTime() / 1000) + Math.floor(Math.random() * 1e4).toString();
-        attributes["_id"] = id;
+        attributes.id = uuid.v1();
 
         // Create member
         super.create(attributes, callback);
