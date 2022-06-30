@@ -1,13 +1,13 @@
-const site = process.env.SITE_URL || "www.dev.nexusintelligencenw.nhs.uk";
+const site = process.env.SITE_URL || "dev.nexusintelligencenw.nhs.uk";
 
 module.exports = {
     message_actions: {
-        home_page: "https://" + site,
-        account_request: "https://" + site + "/support/access-request",
-        account_request_action: "https://" + site + "/support/access-request/action",
-        permission_request_action: "https://" + site + "/support/permissions-request/action",
-        view_request: "https://" + site + "/admin/requests",
-        team_request_action: "https://" + site.replace("www", "api") + "/teamrequests/action",
+        home_page: "https://www." + site,
+        account_request: "https://www." + site + "/support/access-request",
+        account_request_action: "https://www." + site + "/support/access-request/action",
+        permission_request_action: "https://www." + site + "/support/permissions-request/action",
+        view_request: "https://www." + site + "/admin/requests",
+        team_request_action: "https://api." + site + "/teamrequests/action",
     },
     message_template: `
         <style>
