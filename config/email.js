@@ -1,14 +1,13 @@
-const site = process.env.SITE_URL || "nexusintelligencenw.nhs.uk";
-const fullSite = ((process.env.AWSPROFILE || "Dev") === "Dev" ? "dev." : "www.") + site;
-const fullApi = ((process.env.AWSPROFILE || "Dev") === "Dev" ? "dev." : "") + site;
+const site = process.env.SITE_URL || "www.dev.nexusintelligencenw.nhs.uk";
 
 module.exports = {
     message_actions: {
-        home_page: "https://" + fullSite,
-        account_request: "https://" + fullSite + "/support/access-request",
-        account_request_action: "https://" + fullSite + "/support/access-request/action",
-        sign_acknowledgement: "https://messaging." + fullApi + "/acknowledgements/confirmack",
-        view_request: "https://" + fullApi + "/admin/requests",
+        home_page: "https://" + site,
+        account_request: "https://" + site + "/support/access-request",
+        account_request_action: "https://" + site + "/support/access-request/action",
+        permission_request_action: "https://" + site + "/support/permissions-request/action",
+        view_request: "https://" + site + "/admin/requests",
+        team_request_action: "https://" + site.replace("www", "api") + "/teamrequests/action",
     },
     message_template: `
         <style>

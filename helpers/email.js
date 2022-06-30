@@ -30,19 +30,25 @@ class Email {
         },
         callback
     ) {
-        this.transporter
-            .sendMail({
+        this.transporter.sendMail(
+            {
                 from: `"Notifications" <${process.env.EMAIL_USERNAME}>`,
                 to,
                 subject,
                 text: message,
                 attachments,
                 html: actions.length > 0 ? this.createMessageWithActions(actions, message) : this.createMessage(message),
-            })
-            .then((value) => {
-                console.log("Message sent: " + value.messageId + ", to: " + to);
-                callback(null, "Message sent");
-            });
+            },
+            (error, value) => {
+                if (error) {
+                    console.log("Message error: " + error + ", to: " + to);
+                    callback(error, "Message error");
+                } else {
+                    console.log("Message sent: " + value.messageId + ", to: " + to);
+                    callback(null, "Message sent");
+                }
+            }
+        );
     }
 
     static createMessage(message) {
