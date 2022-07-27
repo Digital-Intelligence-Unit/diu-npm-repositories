@@ -70,24 +70,26 @@ class BaseDDBModel {
     getByKeys(tableKeys, callback) {
         // Get key names
         const tableKeyNames = Object.keys(tableKeys);
+        const validPrimaryKeyName = tableKeyNames[0].replace("#", "");
 
         // Create query with partition key
         const query = {
             TableName: this.tableName,
-            KeyConditionExpression: `#${tableKeyNames[0]} = :${tableKeyNames[0]}`,
+            KeyConditionExpression: `#${validPrimaryKeyName} = :${validPrimaryKeyName}`,
             ExpressionAttributeNames: {
-                ["#" + tableKeyNames[0]]: tableKeyNames[0],
+                ["#" + validPrimaryKeyName]: tableKeyNames[0],
             },
             ExpressionAttributeValues: {
-                [":" + tableKeyNames[0]]: tableKeys[tableKeyNames[0]],
+                [":" + validPrimaryKeyName]: tableKeys[tableKeyNames[0]],
             },
         };
 
         // Add secondary key?
         if (tableKeyNames.length > 1) {
-            query["KeyConditionExpression"] += ` and #${tableKeyNames[1]} = :${tableKeyNames[1]}`;
-            query["ExpressionAttributeNames"]["#" + tableKeyNames[1]] = tableKeyNames[1];
-            query["ExpressionAttributeValues"][":" + tableKeyNames[1]] = tableKeys[tableKeyNames[1]];
+            const validSecondaryKeyName = tableKeyNames[1].replace("#", "");
+            query["KeyConditionExpression"] += ` and #${validSecondaryKeyName} = :${validSecondaryKeyName}`;
+            query["ExpressionAttributeNames"]["#" + validSecondaryKeyName] = tableKeyNames[1];
+            query["ExpressionAttributeValues"][":" + validSecondaryKeyName] = tableKeys[tableKeyNames[1]];
         }
 
         // Make query
