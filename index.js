@@ -9,6 +9,7 @@ const Methods = {
 const Models = {
     UserModel: require("./models/user"),
     UserProfileModel: require("./models/user-profile"),
+    UserSettingsModel: require("./models/user-settings"),
     FormSubmissionModel: require("./models/form-submission"),
     VerificationCodeModel: require("./models/verification-code"),
 
