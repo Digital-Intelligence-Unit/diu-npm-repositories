@@ -26,6 +26,8 @@ const Models = {
     CredentialModel: require("./models/credential"),
     GovUkModel: require("./models/govuk"),
     CohortModel: require("./models/cohort"),
+    CaseloadModel: require("./models/caseloads"),
+    CaseloadPatientModel: require("./models/caseload_patient"),
     CVICohortModel: require("./models/cvicohort"),
     AtomicFormDataModel: require("./models/atomic-formdata"),
     AtomicPayloadsModel: require("./models/atomic-payloads"),
@@ -46,6 +48,7 @@ const Helpers = {
     Email: require("./helpers/email"),
     Validator: require("./helpers/validator"),
     MsTeams: require("./helpers/ms-teams"),
+    Permissions: require("./helpers/permissions")
 };
 
 // Exports
