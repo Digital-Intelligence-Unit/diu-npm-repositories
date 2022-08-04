@@ -12,9 +12,10 @@ class DynamoDB {
 
         // Create expression for each field
         Object.entries(attributes).forEach(([key, item]) => {
-            params.UpdateExpression += ` #${key} = :${key},`;
-            params.ExpressionAttributeNames[`#${key}`] = key;
-            params.ExpressionAttributeValues[`:${key}`] = item;
+            const columnName = key.replace("#", "");
+            params.UpdateExpression += ` #${columnName} = :${columnName},`;
+            params.ExpressionAttributeNames[`#${columnName}`] = key;
+            params.ExpressionAttributeValues[`:${columnName}`] = item;
         });
         params.UpdateExpression = params.UpdateExpression.slice(0, -1);
 
