@@ -49,6 +49,7 @@ const Helpers = {
     Email: require("./helpers/email"),
     Validator: require("./helpers/validator"),
     MsTeams: require("./helpers/ms-teams"),
+    Permissions: require("./helpers/permissions")
 };
 
 // Exports
