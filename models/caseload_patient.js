@@ -26,13 +26,13 @@ class CaseloadPatient extends BaseModel {
         this.query({
             text: `DELETE FROM ${this.tableName} WHERE caseload_id = $1`,
             values: [attributes.caseload_id]
-        }, (error) => {
+        }, (deleteError) => {
             // Return error
-            if (error) {
-                callback(error);
+            if (deleteError) {
+                callback(deleteError);
                 return;
             }
-        
+            
             // Create query
             const query = `
             INSERT INTO ${this.tableName} (caseload_id, patient_id)
@@ -46,10 +46,10 @@ class CaseloadPatient extends BaseModel {
             this.query({
                 text: query,
                 values: [attributes.caseload_id]
-            }, (error) => {
+            }, (createError) => {
                 // Return error
-                if (error) {
-                    callback(error);
+                if (createError) {
+                    callback(createError);
                     return;
                 }
 

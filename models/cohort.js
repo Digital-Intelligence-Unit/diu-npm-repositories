@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 const BaseModel = require("./base/dynamo-db");
 const uuid = require("uuid");
 class CohortModel extends BaseModel {
@@ -91,8 +90,44 @@ class CohortModel extends BaseModel {
         ];
 
         // Reusable statements
-        const nonestatement = `M.asthma IS NOT TRUE AND M.chd IS NOT TRUE AND M.heart_failure IS NOT TRUE AND M.cancer IS NOT TRUE AND M.copd IS NOT TRUE AND M.depression IS NOT TRUE AND M.diabetes IS NOT TRUE AND M.hypertension IS NOT TRUE AND M.atrial_fibrillation IS NOT TRUE AND M.ckd IS NOT TRUE AND M.dementia IS NOT TRUE AND M.epilepsy IS NOT TRUE AND M.hypothyroid IS NOT TRUE AND M.mental_health IS NOT TRUE AND M.learning_disabilities IS NOT TRUE AND M.osteoporosis IS NOT TRUE AND M.pad IS NOT TRUE AND M.rheumatoid_arthritis IS NOT TRUE AND M.stroke_tia IS NOT TRUE AND M.palliative_care_flag IS NOT TRUE AND M.psychotic_disorder_flag IS NOT TRUE AND M.spl IS NOT TRUE AND M.chemo_radiotherapy IS NOT TRUE AND M.haematological_cancers IS NOT TRUE AND M.rare_diseases IS NOT TRUE AND M.respiratory IS NOT TRUE`;
-        const noneflagstatement = `D.other_shielded_category IS NULL AND D.assisted_collection IS NULL AND D.home_care_link IS NOT TRUE AND D.single_occupancy IS NULL AND D.disabled_facilities_grant IS NOT TRUE AND D.council_tax IS NULL AND D."neighbourhood_linked_to_PCN" IS NOT TRUE AND D.universal_credit IS NOT TRUE AND D.housing_benefit IS NOT TRUE AND D.business_grant IS NOT TRUE`;
+        const nonestatement = `
+            M.asthma IS NOT TRUE AND 
+            M.chd IS NOT TRUE AND 
+            M.heart_failure IS NOT TRUE AND 
+            M.cancer IS NOT TRUE AND 
+            M.copd IS NOT TRUE AND 
+            M.depression IS NOT TRUE AND 
+            M.diabetes IS NOT TRUE AND 
+            M.hypertension IS NOT TRUE AND 
+            M.atrial_fibrillation IS NOT TRUE AND 
+            M.ckd IS NOT TRUE AND 
+            M.dementia IS NOT TRUE AND 
+            M.epilepsy IS NOT TRUE AND 
+            M.hypothyroid IS NOT TRUE AND 
+            M.mental_health IS NOT TRUE AND 
+            M.learning_disabilities IS NOT TRUE AND 
+            M.osteoporosis IS NOT TRUE AND 
+            M.pad IS NOT TRUE AND 
+            M.rheumatoid_arthritis IS NOT TRUE AND 
+            M.stroke_tia IS NOT TRUE AND 
+            M.palliative_care_flag IS NOT TRUE AND 
+            M.psychotic_disorder_flag IS NOT TRUE AND 
+            M.spl IS NOT TRUE AND 
+            M.chemo_radiotherapy IS NOT TRUE AND 
+            M.haematological_cancers IS NOT TRUE AND 
+            M.rare_diseases IS NOT TRUE AND 
+            M.respiratory IS NOT TRUE`;
+        const noneflagstatement = `
+            D.other_shielded_category IS NULL AND 
+            D.assisted_collection IS NULL AND 
+            D.home_care_link IS NOT TRUE AND 
+            D.single_occupancy IS NULL AND 
+            D.disabled_facilities_grant IS NOT TRUE AND 
+            D.council_tax IS NULL AND 
+            D."neighbourhood_linked_to_PCN" IS NOT TRUE AND 
+            D.universal_credit IS NOT TRUE AND 
+            D.housing_benefit IS NOT TRUE AND 
+            D.business_grant IS NOT TRUE`;
 
 
         // Key to field name
