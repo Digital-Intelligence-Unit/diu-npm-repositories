@@ -25,7 +25,7 @@ class PatientModel extends BaseModel {
         // Make query
         this.query({
             text: query,
-            values: [caseloadId, ((filters.page || 1) - 1) * 1]
+            values: [caseloadId, ((filters.page || 1) - 1) * 100]
         }, callback);
     }
 }
