@@ -32,7 +32,7 @@ class CaseloadPatient extends BaseModel {
                 callback(deleteError);
                 return;
             }
-            
+
             // Create query
             const query = `
             INSERT INTO ${this.tableName} (caseload_id, patient_id)

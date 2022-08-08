@@ -65,7 +65,7 @@ class CohortModel extends BaseModel {
         this.documentClient.scan(query, callback);
     }
 
-    static cohortUrlAsSqlQuery(cohorturl) {
+    static acohortUrlAsSqlQuery(cohorturl) {
         // Exclude fields
         const exclusions = ["FCntDimension", "LCntDimension", "numberSelFlag", "numberSelLtc", "DDimension", "MDimension"];
 

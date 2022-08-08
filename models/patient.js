@@ -20,7 +20,7 @@ class PatientModel extends BaseModel {
             LEFT JOIN public.district_master D using(nhs_number)
             RIGHT JOIN public.caseload_patients CP
             ON patient_id = nhs_number
-            WHERE caseload_id = $1 LIMIT 1 OFFSET $2`;
+            WHERE caseload_id = $1 LIMIT 100 OFFSET $2`;
 
         // Make query
         this.query({
