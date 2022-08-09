@@ -39,7 +39,7 @@ class CaseloadPatient extends BaseModel {
             SELECT $1, nhs_number as nhs_number
             FROM public.population_master M
             WHERE ` + PermissionsHelper.capabilitiesAsSqlQuery(
-                false, capabilities, "populationjoined"
+                capabilities, "populationjoined", "M", false
             ) + CohortModel.cohortUrlAsSqlQuery(attributes.cohorturl);
 
             // Insert

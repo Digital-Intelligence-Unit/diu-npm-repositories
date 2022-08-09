@@ -1,18 +1,26 @@
 class PermissionsHelper {
-    static capabilitiesAsSqlQuery(alone, userroles, table) {
+    static capabilitiesAsSqlQuery(capabilities, capabilityName, table = null, alone = true) {
         let whereclause = "";
-        if (userroles.length > 0) {
-            userroles.forEach((role) => {
+
+        // Check user has capabilities
+        if (capabilities.length > 0) {
+            capabilities.forEach((role) => {
                 const item = JSON.stringify(role);
                 const keys = Object.keys(role);
-                if (item.includes(table + "_")) {
+
+                // Check if related to table
+                if (item.includes(capabilityName + "_")) {
+                    // Add constraint to query
                     if (keys.length > 1) {
                         let current = null;
                         whereclause += "(";
                         keys.forEach((k) => {
-                            if (k.includes(table + "_")) {
-                                current = k.replace(table + "_", "");
-                                whereclause += k.replace(table + "_", "") + " like '" + role[k] + "' AND ";
+                            if (k.includes(capabilityName + "_")) {
+                                current = (table !== null ? table + "." : "") + k.replace(capabilityName + "_", "");
+                                whereclause +=
+                                    (table !== null ? table + "." : "") +
+                                    k.replace(capabilityName + "_", "") +
+                                    " like '" + role[k] + "' AND ";
                             } else {
                                 whereclause += current + " like '" + role[k] + "' AND ";
                             }
@@ -20,16 +28,22 @@ class PermissionsHelper {
                         whereclause = whereclause.substr(0, whereclause.length - 4);
                         whereclause += ") OR ";
                     } else {
-                        whereclause += keys[0].replace(table + "_", "") + " like '" + role[keys[0]] + "'";
+                        whereclause +=
+                            (table !== null ? table + "." : "") +
+                            keys[0].replace(capabilityName + "_", "") +
+                            " like '" + role[keys[0]] + "'";
                         whereclause += " OR ";
                     }
                 }
             });
+
+            // Remove extra AND/OR
             if (whereclause.length > 0) {
                 whereclause = whereclause.substr(0, whereclause.length - 4);
             }
         }
 
+        // Prepare for adjoinment?
         if (whereclause.length > 0) {
             if (alone) {
                 whereclause = " WHERE " + whereclause;
@@ -37,6 +51,7 @@ class PermissionsHelper {
                 whereclause = "(" + whereclause + ") AND ";
             }
         }
+
         return whereclause;
     }
 }

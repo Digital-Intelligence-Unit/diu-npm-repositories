@@ -1,3 +1,4 @@
+/* eslint-disable no-fallthrough */
 const BaseModel = require("./base/dynamo-db");
 const uuid = require("uuid");
 class CohortModel extends BaseModel {
@@ -65,7 +66,7 @@ class CohortModel extends BaseModel {
         this.documentClient.scan(query, callback);
     }
 
-    static acohortUrlAsSqlQuery(cohorturl) {
+    static cohortUrlAsSqlQuery(cohorturl) {
         // Exclude fields
         const exclusions = ["FCntDimension", "LCntDimension", "numberSelFlag", "numberSelLtc", "DDimension", "MDimension"];
 
@@ -148,40 +149,40 @@ class CohortModel extends BaseModel {
         };
 
         // Value to SQL query
-        const convertValuetoSQL = (dimensionName, value) => {
-            switch (dimensionName) {
-                case "SexDimension":
-                case "LDimension":
-                case "GPDimension": {
-                    if (value.length === 0) return " IS NOT NULL ";
-                    else if (value.length === 1) return " = '" + value[0] + "'";
-                    else {
-                        let list = " in (";
-                        value.forEach((element) => {
-                            list += "'" + element + "',";
-                        });
-                        return list.substr(0, list.length - 1) + ")";
-                    }
+        const convertValuetoSQL = (dimensionName, fieldValue) => {
+            // Array to sql
+            const arrayToSql = (array) => {
+                if (array.length === 0) return " IS NOT NULL ";
+                else if (array.length === 1) return " = '" + array[0] + "'";
+                else {
+                    let list = " in (";
+                    array.forEach((element) => {
+                        list += "'" + element + "',";
+                    });
+                    return list.substr(0, list.length - 1) + ")";
                 }
-                case "WDimension":
-                case "CCGDimension": {
-                    if (value.length === 0) return " IS NOT NULL ";
-                    else if (value.length === 1) return " = '" + value[0] + "'";
-                    else {
-                        let list = " in (";
-                        value.forEach((element) => {
-                            list += "'" + element + "',";
-                        });
-                        return list.substr(0, list.length - 1) + ")";
-                    }
-                }
-                case "AgeDimension": {
+            };
+
+            // Map fields to function
+            const fieldValueMap = {
+                SexDimension: (value) => {
+                    // Change values
+                    value = value.map((sex) => {
+                        return sex.length > 1 ? sex.slice(0, 1) : sex;
+                    });
+                    return arrayToSql(value);
+                },
+                LDimension: arrayToSql,
+                GPDimension: arrayToSql,
+                WDimension: arrayToSql,
+                CCGDimension: arrayToSql,
+                AgeDimension: (value) => {
                     return " >= " + value[0][0] + " AND M.age <= " + value[0][1];
-                }
-                case "RskDimension": {
+                },
+                RskDimension: (value) => {
                     return " >= " + value[0][0] + " AND M.risk_score_int <= " + value[0][1];
-                }
-                case "LTCs2Dimension": {
+                },
+                LTCs2Dimension: (value) => {
                     let noneflag = false;
                     value.forEach((element) => {
                         if (element[0] === "None") noneflag = true;
@@ -200,8 +201,8 @@ class CohortModel extends BaseModel {
                         });
                         return statement.substr(0, statement.length - 4) + ")";
                     }
-                }
-                case "Flags2Dimension": {
+                },
+                Flags2Dimension: (value) => {
                     let noneflag2 = false;
                     value.forEach((element) => {
                         if (element[0] === "None") noneflag2 = true;
@@ -220,8 +221,8 @@ class CohortModel extends BaseModel {
                         });
                         return statement2.substr(0, statement2.length - 4) + ")";
                     }
-                }
-                case "MatrixDimension": {
+                },
+                MatrixDimension: (value) => {
                     let whereClause = "";
                     value.forEach((valuePair, i) => {
                         if (valuePair[0] && valuePair[1]) {
@@ -235,9 +236,8 @@ class CohortModel extends BaseModel {
                     whereClause = ` (${whereClause}) `;
                     return whereClause;
                 }
-                default:
-                    return " = '0000000000'";
-            }
+            };
+            return fieldValueMap.hasOwnProperty(dimensionName) ? fieldValueMap[dimensionName](fieldValue) : " = '0000000000'";
         };
 
         // Convert url to query
@@ -248,7 +248,7 @@ class CohortModel extends BaseModel {
             const ch = JSON.parse(cohorturl);
             const keys = Object.keys(ch);
             keys.forEach((k) => {
-                console.log(k, convertKeytoField(k));
+                console.log(convertValuetoSQL(k, ch[k]));
                 if (exclusions.indexOf(k) === -1) statement += convertKeytoField(k) + convertValuetoSQL(k, ch[k]) + " AND ";
             });
             statement = statement.substr(0, statement.length - 4);
