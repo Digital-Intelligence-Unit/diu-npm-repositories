@@ -248,7 +248,6 @@ class CohortModel extends BaseModel {
             const ch = JSON.parse(cohorturl);
             const keys = Object.keys(ch);
             keys.forEach((k) => {
-                console.log(convertValuetoSQL(k, ch[k]));
                 if (exclusions.indexOf(k) === -1) statement += convertKeytoField(k) + convertValuetoSQL(k, ch[k]) + " AND ";
             });
             statement = statement.substr(0, statement.length - 4);
