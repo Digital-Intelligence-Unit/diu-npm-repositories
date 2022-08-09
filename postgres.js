@@ -57,7 +57,7 @@ FROM (
             const errResponse = "Error: " + error;
             callback(errResponse, null);
         }
-        callback(null, results.rows);
+        callback(null, results.rows || []);
     });
 }
 
