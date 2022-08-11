@@ -5,7 +5,7 @@ const CohortModel = require("./cohort");
 class CaseloadPatient extends BaseModel {
     tableName = "caseload_patients";
 
-    create(attributes, callback) {
+    createByPatientIds(attributes, callback) {
         // Delete existing
         this.query({
             text: `DELETE FROM ${this.tableName} WHERE caseload_id = $1`,
