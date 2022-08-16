@@ -1,23 +1,57 @@
 const BaseModel = require("./base/postgres");
 const PermissionsHelper = require("../helpers/permissions");
 const CohortModel = require("./cohort");
+const CaseloadModel = require("./caseload");
 
 class CaseloadPatient extends BaseModel {
     tableName = "caseload_patients";
+
+    create(attributes, callback) {
+        super.create(attributes, (createError) => {
+            // Handle error
+            if (createError) {
+                callback(createError);
+                return;
+            }
+
+            // Increment caseload total
+            (new CaseloadModel()).updateTotal({
+                id: attributes.caseload_id,
+                count: 1,
+                operator: "+",
+            }, callback);
+        });
+    }
 
     createByPatientIds(attributes, callback) {
         // Delete existing
         this.query({
             text: `DELETE FROM ${this.tableName} WHERE caseload_id = $1`,
             values: [attributes.caseload_id]
-        }, (error) => {
+        }, (deleteError) => {
             // Return error
-            if (error) {
-                callback(error);
+            if (deleteError) {
+                callback(deleteError);
                 return;
             }
 
-            super.create(attributes, callback);
+            // Create rows
+            super.create(
+                attributes.patientids.map((id) => {
+                    return { caseload_id: attributes.caseload_id, patient_id: id };
+                }),
+                (createError, createResponse) => {
+                    // Handle error
+                    if (createError) { callback(createError); }
+
+                    // Update caseload total
+                    (new CaseloadModel()).updateTotal({
+                        id: attributes.caseload_id,
+                        count: attributes.patientids.length,
+                        operator: "="
+                    }, callback);
+                }
+            );
         });
     }
 
@@ -59,8 +93,42 @@ class CaseloadPatient extends BaseModel {
                     SELECT count(*) as total FROM ${this.tableName}
                     WHERE caseload_id = $1`,
                     values: [attributes.caseload_id]
-                }, callback);
+                }, (getTotalError, getTotalRes) => {
+                    // Handle error
+                    if (getTotalError) { callback(getTotalError); }
+
+                    // Update caseload total
+                    (new CaseloadModel()).updateTotal({
+                        id: attributes.caseload_id,
+                        count: parseInt(getTotalRes[0].total),
+                        operator: "="
+                    }, callback);
+                });
             });
+        });
+    }
+
+    updateByPrimaryKey() {}
+
+    deleteByPrimaryKey() {}
+
+    deleteByPatientId(keys, callback) {
+        this.query({
+            text: `DELETE FROM caseload_patients WHERE caseload_id = $1 AND patient_id = $2 RETURNING *`,
+            values: [keys.caseload_id, keys.patient_id]
+        }, (deleteError, result) => {
+            // Handle error
+            if (deleteError) {
+                callback(deleteError);
+                return;
+            }
+
+            // Decrement caseload total
+            (new CaseloadModel()).updateTotal({
+                id: keys.caseload_id,
+                count: 1,
+                operator: "-"
+            }, callback);
         });
     }
 
@@ -69,9 +137,7 @@ class CaseloadPatient extends BaseModel {
         this.query({
             text: `DELETE FROM ${this.tableName} WHERE caseload_id = $1 RETURNING *`,
             values: [caseloadId]
-        }, (err, result) => {
-            callback(err, result || null);
-        });
+        }, callback);
     }
 }
 

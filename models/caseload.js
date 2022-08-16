@@ -65,6 +65,29 @@ class CaseloadModel extends BaseModel {
         this.documentClient.scan(query, callback);
     }
 
+    updateTotal({ id, count, operator = "=" }, callback) {
+        if (operator === "=") {
+            // Set total
+            this.update({ id }, { total: count }, callback);
+        } else {
+            // Increment/Decrement
+            this.documentClient.update({
+                Key: { id },
+                TableName: this.tableName,
+                ExpressionAttributeNames: { "#total": "total" },
+                ExpressionAttributeValues: { ":count": count },
+                UpdateExpression: `SET #total = #total ${operator} :count`,
+                ReturnValues: "ALL_NEW"
+            }, (err, res) => {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    callback(null, res.Attributes || null);
+                }
+            });
+        }
+    }
+
     delete(keys, callback) {
         // Delete caseload patients
         const CaseloadPatientModel = new (require("./caseload_patient"))();
