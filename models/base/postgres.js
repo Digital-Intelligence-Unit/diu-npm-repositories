@@ -29,6 +29,7 @@ class BasePostgresModel {
                     const errQueryResponse = {
                         23505: "Item already exists"
                     }[errQuery.code] || "Error executing query";
+                    console.error(errQueryResponse, errQuery.stack);
                     callback(errQueryResponse, null);
                     return;
                 }
