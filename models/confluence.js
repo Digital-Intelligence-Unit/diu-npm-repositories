@@ -23,6 +23,7 @@ class ConfluenceModel {
 
         // Make request
         this.aQuery("https://diu.atlassian.net/wiki/rest/api/content/search", queryOptions, (err, res, data) => {
+            console.log(err, data);
             if (err) {
                 callback(null);
             } else {
