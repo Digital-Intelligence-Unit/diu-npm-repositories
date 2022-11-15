@@ -38,6 +38,11 @@ const Models = {
     ActiveDirectoryModel: require("./models/active-directory"),
     ConfluenceModel: require("./models/confluence"),
     ClinicalTrialModel: require("./models/clinical-trial"),
+
+    PBICategory: require("./models/pbi-category"),
+    PBIMetric: require("./models/pbi-metric"),
+    PBIMetricData: require("./models/pbi-metric-data"),
+    PBIMetricLevel: require("./models/pbi-metric-level")
 };
 
 // Helpers
