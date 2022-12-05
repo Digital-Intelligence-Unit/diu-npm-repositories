@@ -2,26 +2,37 @@ const BaseModel = require("./base/postgres");
 class PBIMetricData extends BaseModel {
     tableName = "pbi_metrics_data";
 
-    getByMetricId(id, filters = { level: "ward" }, callback) {
+    getByMetricLevelId(id, filters = { geo_year: null }, callback) {
         // Select all
         const query = {
             text: `
-                SELECT ${this.tableName}.*, pbi_geographies.geo_name, ST_AsGeoJSON(pbi_geographies.geom) as geojson
-                FROM ${this.tableName} 
-                RIGHT JOIN pbi_geographies ON pbi_geographies.geo_id = ${this.tableName}.geo_id
-                WHERE ${this.tableName}.metric_level_id = (
-                    SELECT metric_level_id from pbi_metrics_level 
-                    WHERE metric_id = $1 AND metric_level = $2
-                ) AND metric_period = $3`,
-            values: [id, filters.level, filters.period],
+            WITH pbi_metrics_level_data AS (
+                SELECT *
+                FROM pbi_metrics_level
+                LEFT JOIN pbi_metrics_data ON pbi_metrics_level.metric_level_id = pbi_metrics_data.metric_level_id
+                WHERE pbi_metrics_level.metric_level_id = $1
+                AND pbi_metrics_level.metric_period = $2
+            )
+            SELECT pbi_metrics_level_data.*, pbi_geographies.geo_name, 
+            pbi_geographies.geo_year, ST_AsGeoJSON(pbi_geographies.geom) as geojson
+            FROM pbi_metrics_level_data
+            LEFT JOIN pbi_geographies ON pbi_geographies.geo_id = pbi_metrics_level_data.geo_id
+            WHERE pbi_geographies.geom IS NOT NULL`,
+            values: [id, filters.period],
         };
+
+        // Filter geo year?
+        if (filters.geo_year) {
+            query.text += ` AND pbi_geographies.geo_year = $3`;
+            query.values.push(filters.geo_year);
+        }
 
         // Dynamic filter?
         if (filters.value_operator && filters.value) {
             // Note: Make sure to validate operator first
             query.text += ` AND (
-                metric_data_value_float ${filters.value_operator} $4 OR 
-                metric_data_value_float ${filters.value_operator} $4
+                metric_data_value_float ${filters.value_operator} $${query.values.length + 1} OR 
+                metric_data_value_float ${filters.value_operator} $${query.values.length + 1}
             )`;
             query.values.push(filters.value);
         }
