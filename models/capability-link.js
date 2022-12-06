@@ -54,7 +54,15 @@ class CapabilityLinkModel extends BaseModel {
 
             // Delete old links
             const newCapabilityIds = newCapabilities.map((l) => l.id);
-            const oldCapabilities = links.filter((l) => !newCapabilityIds.includes(l.capability_id));
+            let oldCapabilities = links.filter((l) => !newCapabilityIds.includes(l.capability_id));
+            if (metadata.managed_capabilities && metadata.managed_capabilities.length > 0) {
+                const arrManagedCapabilities = metadata.managed_capabilities.map((capability) => {
+                    return capability.id;
+                });
+                oldCapabilities = oldCapabilities.filter((capability) => {
+                    return arrManagedCapabilities.includes(capability.capability_id);
+                });
+            }
             if (oldCapabilities.length > 0) {
                 this.query(
                     {
@@ -70,65 +78,6 @@ class CapabilityLinkModel extends BaseModel {
 
             callback(null, newCapabilities);
         });
-    }
-
-    admin_link(capabilityData, callback) {
-        this.getByTypeId(capabilityData.linkType, capabilityData.linkId, (err, links) => {
-            if (err) {
-                callback(err, null);
-            }
-            // console.log(links);
-            const arrLinkID = capabilityData.managableCapabilities.map((capability) => {
-                return capability.id;
-            });
-            const arrUpdateID = capabilityData.managableAssignedCapabilities.map((capability) => {
-                return capability.id;
-            });
-            const linksToRemove = links
-                .filter((link) => {
-                    if (arrLinkID.includes(link.capability_id)) {
-                        return true;
-                    }
-                    return false;
-                })
-                .filter((link) => {
-                    if (!arrUpdateID.includes(link.capability_id)) {
-                        return true;
-                    }
-                    return false;
-                });
-            if (linksToRemove.length > 0) {
-                this.query(
-                    {
-                        text: `DELETE FROM ${this.tableName} WHERE id IN (${linksToRemove.map((l) => l.id).join(",")})`,
-                    },
-                    (error, data) => {
-                        if (error) {
-                            callback(error, null);
-                        }
-                        console.log("data");
-                        console.log(data);
-                    }
-                );
-            }
-            capabilityData.managableAssignedCapabilities.forEach((capability) => {
-                this.create(
-                    {
-                        capability_id: capability.id,
-                        link_id: capabilityData.linkId,
-                        link_type: capabilityData.linkType,
-                        approved_by: capability.authoriser,
-                        valuejson: capability.valuejson,
-                    },
-                    (error) => {
-                        if (error) {
-                            callback(error, null);
-                        }
-                    }
-                );
-            });
-        });
-        callback(null, capabilityData);
     }
 
     getByTypeId(type, typeId, callback) {
