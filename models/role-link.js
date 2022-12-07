@@ -29,7 +29,15 @@ class RoleLinkModel extends BaseModel {
                 });
 
             // Delete old links
-            const oldRoles = links.filter((l) => !roles.includes(l.role_id));
+            let oldRoles = links.filter((l) => !roles.includes(l.role_id));
+            if (metadata.managed_roles && metadata.managed_roles.length > 0) {
+                const arrManagedRoles = metadata.managed_roles.map((capability) => {
+                    return capability.id;
+                });
+                oldRoles = oldRoles.filter((role) => {
+                    return arrManagedRoles.includes(role.role_id);
+                });
+            }
             if (oldRoles.length > 0) {
                 this.query(
                     {
@@ -45,62 +53,6 @@ class RoleLinkModel extends BaseModel {
 
             callback(null, roles);
         });
-    }
-
-    admin_link(roleData, callback) {
-        this.getByLinkId(roleData.linkType, roleData.linkId, (err, links) => {
-            if (err) {
-                callback(err, null);
-            }
-            const arrLinkID = roleData.managableRoles.map((role) => {
-                return role.id;
-            });
-            const arrUpdateID = roleData.managableAssignedRoles.map((capability) => {
-                return capability.id;
-            });
-            const linksToRemove = links
-                .filter((link) => {
-                    if (arrLinkID.includes(link.role_id)) {
-                        return true;
-                    }
-                    return false;
-                })
-                .filter((link) => {
-                    if (!arrUpdateID.includes(link.role_id)) {
-                        return true;
-                    }
-                    return false;
-                });
-
-            if (linksToRemove.length > 0) {
-                this.query(
-                    {
-                        text: `DELETE FROM ${this.tableName} WHERE id IN (${linksToRemove.map((l) => l.id).join(",")})`,
-                    },
-                    (error) => {
-                        if (error) {
-                            callback(error, null);
-                        }
-                    }
-                );
-            }
-            roleData.managableAssignedRoles.forEach((role) => {
-                this.create(
-                    {
-                        role_id: role.id,
-                        link_id: roleData.linkId,
-                        link_type: roleData.linkType,
-                        approved_by: role.authoriser,
-                    },
-                    (createError) => {
-                        if (createError) {
-                            callback(createError, null);
-                        }
-                    }
-                );
-            });
-        });
-        callback(null, roleData);
     }
 
     getByLinkId(type, typeId, callback) {
