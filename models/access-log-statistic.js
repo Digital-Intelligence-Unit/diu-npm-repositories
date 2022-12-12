@@ -2,6 +2,47 @@ const BaseModel = require("./base/postgres");
 class AccessLogStatistic extends BaseModel {
     tableName = "access_log_statistics";
 
+    updateOrCreate(attributes, callback) {
+        // Create query
+        let query = `INSERT INTO ${this.tableName} (type, date, total) VALUES `;
+
+        // Array?
+        if (!(attributes instanceof Array)) {
+            query += "($1, $2, $3),";
+        } else {
+            attributes.forEach((attribute, index) => {
+                const itemIndex = 3 * (index + 1);
+                query += `($${itemIndex - 2}, $${itemIndex - 1}, $${itemIndex}),`;
+            });
+        }
+
+        // Add on conflict
+        query = query.slice(0, -1) + " ON CONFLICT (type, date) DO UPDATE SET total = EXCLUDED.total;";
+
+        // Persist
+        this.query(
+            {
+                text: query,
+                values: attributes.reduce((array, attribute) => {
+                    return array.concat(Object.values(attribute));
+                }, [])
+            },
+            callback
+        );
+    }
+
+    getByDates(params, callback) {
+        this.query(
+            {
+                text: `SELECT * FROM ${this.tableName} WHERE date IN (
+                    ${params.dates.map((v, i) => { return "$" + (i + 1); }).join(",")}
+                )`,
+                values: params.dates,
+            },
+            callback
+        );
+    }
+
     getByDateRange(params, callback) {
         // Group by month?
         if (params.groupBy && params.groupBy === "month") {
