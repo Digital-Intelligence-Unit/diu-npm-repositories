@@ -29,7 +29,15 @@ class RoleLinkModel extends BaseModel {
                 });
 
             // Delete old links
-            const oldRoles = links.filter((l) => !roles.includes(l.role_id));
+            let oldRoles = links.filter((l) => !roles.includes(l.role_id));
+            if (metadata.managed_roles && metadata.managed_roles.length > 0) {
+                const arrManagedRoles = metadata.managed_roles.map((capability) => {
+                    return capability.id;
+                });
+                oldRoles = oldRoles.filter((role) => {
+                    return arrManagedRoles.includes(role.role_id);
+                });
+            }
             if (oldRoles.length > 0) {
                 this.query(
                     {

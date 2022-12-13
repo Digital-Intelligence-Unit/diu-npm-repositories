@@ -10,7 +10,9 @@ class CapabilityLinkModel extends BaseModel {
                 values: [attributes.capability_id, attributes.link_type, attributes.link_id, attributes.valuejson || null],
             },
             (error, capabilities) => {
-                if (error) { callback(error, null); }
+                if (error) {
+                    callback(error, null);
+                }
 
                 // Update if link does exist
                 if (capabilities.length > 0) {
@@ -25,7 +27,9 @@ class CapabilityLinkModel extends BaseModel {
     link(newCapabilities, metadata, callback) {
         // Get existing rows
         this.getByTypeId(metadata.type, metadata.id, (err, links) => {
-            if (err) { callback(err, null); }
+            if (err) {
+                callback(err, null);
+            }
 
             // Create new links
             const currentCapabilityIds = links.map((l) => l.capability_id);
@@ -50,7 +54,15 @@ class CapabilityLinkModel extends BaseModel {
 
             // Delete old links
             const newCapabilityIds = newCapabilities.map((l) => l.id);
-            const oldCapabilities = links.filter((l) => !newCapabilityIds.includes(l.capability_id));
+            let oldCapabilities = links.filter((l) => !newCapabilityIds.includes(l.capability_id));
+            if (metadata.managed_capabilities && metadata.managed_capabilities.length > 0) {
+                const arrManagedCapabilities = metadata.managed_capabilities.map((capability) => {
+                    return capability.id;
+                });
+                oldCapabilities = oldCapabilities.filter((capability) => {
+                    return arrManagedCapabilities.includes(capability.capability_id);
+                });
+            }
             if (oldCapabilities.length > 0) {
                 this.query(
                     {
@@ -76,6 +88,10 @@ class CapabilityLinkModel extends BaseModel {
             },
             callback
         );
+    }
+
+    getByCapabilityId(capabilityID, callback) {
+        this.query(`SELECT * FROM capability_links WHERE capability_id IN (${capabilityID}) AND link_type = 'user'`, callback);
     }
 
     deleteByLinkable(capabilityId, type, typeId, callback) {
