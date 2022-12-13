@@ -27,40 +27,40 @@ class TeamMemberModel extends BaseModel {
     }
 
     getByTeamCode(teamcode, callback) {
-        const params = {
-            TableName: this.tableName,
-            IndexName: "teamcode-index",
-            KeyConditionExpression: "#teamcode = :teamcode",
-            ExpressionAttributeNames: {
-                "#teamcode": "teamcode",
-            },
-            ExpressionAttributeValues: {
-                ":teamcode": teamcode,
-            },
-        };
-        this.documentClient.query(params, callback);
-    }
-
-    getByTeamCodes(teamcodes, callback) {
-        const arrTeamCodes = teamcodes.split(",");
-        const objTeamCodes = {};
-        // let index = 0;
-        let teamCodeContainsString = "";
-        arrTeamCodes.forEach(function (code, index) {
-            const teamCode = ":teamcode" + index;
-            objTeamCodes[teamCode.toString()] = code;
-            if (index) {
-                teamCodeContainsString += " OR contains (teamcode, :teamcode" + index + ")";
-            } else {
-                teamCodeContainsString = "contains (teamcode, :teamcode" + index + ")";
-            }
-        });
-        const params = {
-            TableName: this.tableName,
-            FilterExpression: teamCodeContainsString,
-            ExpressionAttributeValues: objTeamCodes,
-        };
-        this.documentClient.scan(params, callback);
+        if (teamcode.includes(",")) {
+            const arrTeamCodes = teamcode.split(",");
+            const objTeamCodes = {};
+            // let index = 0;
+            let teamCodeContainsString = "";
+            arrTeamCodes.forEach(function (code, index) {
+                const teamCode = ":teamcode" + index;
+                objTeamCodes[teamCode.toString()] = code;
+                if (index) {
+                    teamCodeContainsString += " OR contains (teamcode, :teamcode" + index + ")";
+                } else {
+                    teamCodeContainsString = "contains (teamcode, :teamcode" + index + ")";
+                }
+            });
+            const params = {
+                TableName: this.tableName,
+                FilterExpression: teamCodeContainsString,
+                ExpressionAttributeValues: objTeamCodes,
+            };
+            this.documentClient.scan(params, callback);
+        } else {
+            const params = {
+                TableName: this.tableName,
+                IndexName: "teamcode-index",
+                KeyConditionExpression: "#teamcode = :teamcode",
+                ExpressionAttributeNames: {
+                    "#teamcode": "teamcode",
+                },
+                ExpressionAttributeValues: {
+                    ":teamcode": teamcode,
+                },
+            };
+            this.documentClient.query(params, callback);
+        }
     }
 
     getByUsernameOrgCode(username, organisation, callback) {
