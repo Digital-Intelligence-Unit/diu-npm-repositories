@@ -42,7 +42,8 @@ const Models = {
     PBICategory: require("./models/pbi-category"),
     PBIMetric: require("./models/pbi-metric"),
     PBIMetricData: require("./models/pbi-metric-data"),
-    PBIMetricLevel: require("./models/pbi-metric-level")
+    PBIMetricLevel: require("./models/pbi-metric-level"),
+    PBIView: require("./models/pbi-view")
 };
 
 // Helpers
