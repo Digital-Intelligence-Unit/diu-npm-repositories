@@ -1,5 +1,10 @@
 class Postgres {
     static marshallAttribute(attribute) {
+        if (attribute == null) {
+            // Handle nullables
+            return attribute;
+        }
+
         if (attribute instanceof Array) {
             // Handle arrays
             return "{" + attribute.join(",") + "}";

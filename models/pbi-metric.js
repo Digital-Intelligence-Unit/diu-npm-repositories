@@ -1,6 +1,25 @@
 const BaseModel = require("./base/postgres");
 class PBIMetric extends BaseModel {
     tableName = "pbi_metrics";
+    primaryKey = "metric_id";
+
+    getById(id, callback) {
+        if (!(id instanceof Array)) {
+            // Create single
+            this.getByPrimaryKey(id, callback);
+        } else {
+            // Get by array
+            this.query(
+                {
+                    text: `SELECT * FROM ${this.tableName} WHERE metric_id IN (${id.map((v, i) => "$" + (i + 1))})`,
+                    values: id,
+                },
+                (err, result) => {
+                    callback(err, result);
+                }
+            );
+        }
+    }
 
     getByFilters(filters = {}, callback) {
         // Create conditions

@@ -1,6 +1,6 @@
 const BaseModel = require("./base/dynamo-db");
 const uuid = require("uuid");
-class CohortModel extends BaseModel {
+class CVICohortModel extends BaseModel {
     tableName = "cvi_cohorts";
 
     accessor(attributes) {
@@ -21,6 +21,32 @@ class CohortModel extends BaseModel {
 
             // Batch create
             super.create(attributes, callback);
+        }
+    }
+
+    getById(id, callback) {
+        if (!(id instanceof Array)) {
+            // Create single
+            this.getByKeys({ id }, callback);
+        } else {
+            // Get all by id
+            new this.AWS.DynamoDB().batchGetItem({
+                RequestItems: {
+                    [this.tableName]: {
+                        Keys: id.map((item, index) => {
+                            const keys = item.split("#");
+                            return {
+                                cohortName: { S: keys[0] },
+                                createdDT: { S: keys[1] }
+                            };
+                        }, {})
+                    }
+                }
+            }, (error, data) => {
+                // Return data
+                if (error) { callback(error, null); }
+                callback(null, { Items: data.Responses[this.tableName] });
+            });
         }
     }
 
@@ -66,4 +92,4 @@ class CohortModel extends BaseModel {
     }
 }
 
-module.exports = CohortModel;
+module.exports = CVICohortModel;
