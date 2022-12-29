@@ -45,7 +45,11 @@ class CVICohortModel extends BaseModel {
             }, (error, data) => {
                 // Return data
                 if (error) { callback(error, null); }
-                callback(null, { Items: data.Responses[this.tableName] });
+                callback(null, {
+                    Items: data.Responses[this.tableName].map((item) => {
+                        return this.AWS.DynamoDB.Converter.unmarshall(item);
+                    })
+                });
             });
         }
     }
