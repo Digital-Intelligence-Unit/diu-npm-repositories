@@ -46,7 +46,7 @@ class PBIView extends BaseModel {
                         new CVICohortModel().getById(sources.cvi_cohorts, (error, data) => {
                             // Check for error
                             if (error) { reject(error); }
-                            console.log(data);
+
                             // Re-map
                             resolve(
                                 data.Items.reduce((items, item) => {
