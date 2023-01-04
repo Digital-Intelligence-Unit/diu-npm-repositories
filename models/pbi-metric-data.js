@@ -2,6 +2,39 @@ const BaseModel = require("./base/postgres");
 class PBIMetricData extends BaseModel {
     tableName = "pbi_metrics_data";
 
+    getSpineDataByMetricLevelId(id, callback) {
+        this.query({
+            text: `
+            SELECT * FROM (
+                SELECT x.quartile,MIN(x.metric_data_value_float) metric_data_value_float, COUNT(*) 
+                FROM (
+                    SELECT ntile(4) OVER (ORDER BY metric_data_value_float) AS quartile, metric_data_value_float 
+                    FROM pbi_metrics_data 
+                    WHERE metric_level_id = $1
+                ) AS x --WHERE x.quartile <= 3
+                GROUP BY x.quartile 
+                ORDER BY x.quartile
+            ) j 
+            
+            UNION ALL 
+          
+            SELECT * FROM (
+                SELECT 5 as quartile, MAX(x.metric_data_value_float) metric_data_value_float, COUNT(*) 
+                FROM (
+                    SELECT ntile(4) OVER (ORDER BY metric_data_value_float) AS quartile, metric_data_value_float 
+                    FROM pbi_metrics_data 
+                    WHERE metric_level_id = $1
+                ) AS x 
+                WHERE x.quartile = 4 
+                GROUP BY x.quartile 
+                ORDER BY x.quartile
+            ) k`,
+            values: [id]
+        }, (err, result) => {
+            callback(err, result);
+        });
+    }
+
     getByMetricLevelId(id, filters = { geo_year: null }, callback) {
         // Select all
         const query = {
