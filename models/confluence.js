@@ -14,11 +14,11 @@ class ConfluenceModel {
     searchContent(filters = {}, callback) {
         // Limit to user guides
         const queryOptions = {};
-        queryOptions.qs = { cql: "parent=271384577" };
+        queryOptions.qs = { cql: "parent=271384577", expand: "metadata.labels" };
 
         // Filter by keyword?
         if (filters.keyword) {
-            queryOptions.qs.cql += ` and text ~ "${filters.keyword}"`;
+            queryOptions.qs.cql += ` and text ~ "*${filters.keyword}*"`;
         }
 
         // Make request
