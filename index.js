@@ -29,6 +29,7 @@ const Models = {
     CaseloadModel: require("./models/caseload"),
     CaseloadPatientModel: require("./models/caseload_patient"),
     PatientModel: require("./models/patient"),
+    PatientsModel: require("./models/patients"),
     CVICohortModel: require("./models/cvicohort"),
     AtomicFormDataModel: require("./models/atomic-formdata"),
     AtomicPayloadsModel: require("./models/atomic-payloads"),
@@ -43,7 +44,7 @@ const Models = {
     PBIMetric: require("./models/pbi-metric"),
     PBIMetricData: require("./models/pbi-metric-data"),
     PBIMetricLevel: require("./models/pbi-metric-level"),
-    PBIView: require("./models/pbi-view")
+    PBIView: require("./models/pbi-view"),
 };
 
 // Helpers
@@ -55,7 +56,7 @@ const Helpers = {
     Email: require("./helpers/email"),
     Validator: require("./helpers/validator"),
     MsTeams: require("./helpers/ms-teams"),
-    Permissions: require("./helpers/permissions")
+    Permissions: require("./helpers/permissions"),
 };
 
 // Exports
