@@ -30,27 +30,32 @@ class CVICohortModel extends BaseModel {
             this.getByKeys({ id }, callback);
         } else {
             // Get all by id
-            new this.AWS.DynamoDB().batchGetItem({
-                RequestItems: {
-                    [this.tableName]: {
-                        Keys: id.map((item, index) => {
-                            const keys = item.split("#");
-                            return {
-                                cohortName: { S: keys[0] },
-                                createdDT: { S: keys[1] }
-                            };
-                        }, {})
+            new this.AWS.DynamoDB().batchGetItem(
+                {
+                    RequestItems: {
+                        [this.tableName]: {
+                            Keys: id.map((item, index) => {
+                                const keys = item.split("#");
+                                return {
+                                    cohortName: { S: keys[0] },
+                                    createdDT: { S: keys[1] },
+                                };
+                            }, {}),
+                        },
+                    },
+                },
+                (error, data) => {
+                    // Return data
+                    if (error) {
+                        callback(error, null);
                     }
+                    callback(null, {
+                        Items: data.Responses[this.tableName].map((item) => {
+                            return this.AWS.DynamoDB.Converter.unmarshall(item);
+                        }),
+                    });
                 }
-            }, (error, data) => {
-                // Return data
-                if (error) { callback(error, null); }
-                callback(null, {
-                    Items: data.Responses[this.tableName].map((item) => {
-                        return this.AWS.DynamoDB.Converter.unmarshall(item);
-                    })
-                });
-            });
+            );
         }
     }
 
@@ -81,14 +86,27 @@ class CVICohortModel extends BaseModel {
 
         // Filter by teamcode
         if (params.teamcode) {
-            query.FilterExpression.push("#teamcode = :teamcode");
-            query.ExpressionAttributeNames["#teamcode"] = "teamcode";
-            query.ExpressionAttributeValues[":teamcode"] = params.teamcode;
+            if (params.teamcode.includes(",")) {
+                const arrTeamCodes = params.teamcode.split(",");
+                // let index = 0;
+                arrTeamCodes.forEach(function (code, index) {
+                    const teamCode = ":teamcode" + index;
+                    const teamCodeHash = "#teamcode" + index;
+                    const expression = "#teamcode" + index + " = " + teamCode;
+                    query.FilterExpression.push(expression);
+                    query.ExpressionAttributeNames[teamCodeHash] = "teamcode";
+                    query.ExpressionAttributeValues[teamCode] = code;
+                });
+            } else {
+                query.FilterExpression.push("#teamcode = :teamcode");
+                query.ExpressionAttributeNames["#teamcode"] = "teamcode";
+                query.ExpressionAttributeValues[":teamcode"] = params.teamcode;
+            }
         }
 
         // Join filters
         if (query.FilterExpression) {
-            query.FilterExpression = query.FilterExpression.join(" and ");
+            query.FilterExpression = query.FilterExpression.join(" or ");
         }
 
         // Run query
