@@ -1,3 +1,4 @@
+const juice = require("juice");
 const nodemailer = require("nodemailer");
 const config = require("../config/email");
 const messageTemplate = config.message_template;
@@ -52,7 +53,7 @@ class Email {
     }
 
     static createMessage(message) {
-        return messageTemplate.replace("MESSAGE", message);
+        return juice(messageTemplate.replace("MESSAGE", message));
     }
 
     static createMessageWithActions(actions, message) {
@@ -65,7 +66,12 @@ class Email {
         });
 
         // Apply to template
-        return messageTemplate.replace("MESSAGE</div>", `${message}</div><div class="full main mat-card action">${actionsHTML}</div>`);
+        return juice(
+            messageTemplate.replace(
+                "MESSAGE</div>",
+                `${message}</div><div class="full main mat-card action">${actionsHTML}</div>`
+            )
+        );
     }
 }
 
