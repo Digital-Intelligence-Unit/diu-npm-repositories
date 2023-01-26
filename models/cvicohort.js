@@ -7,7 +7,11 @@ class CVICohortModel extends BaseModel {
     }
 
     getById(id, callback) {
-        const query = `SELECT * FROM ${this.tableName} WHERE id IN (${id})`;
+        let ids = id;
+        if (Array.isArray(id)) {
+            ids = id.join(",");
+        }
+        const query = `SELECT * FROM ${this.tableName} WHERE id IN (${ids})`;
         this.query(query, callback);
     }
 
