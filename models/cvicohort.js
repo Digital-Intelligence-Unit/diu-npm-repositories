@@ -7,37 +7,30 @@ class CVICohortModel extends BaseModel {
     }
 
     getById(id, callback) {
-        const query = `SELECT * FROM ${this.tableName} WHERE id = ${id}`;
+        const query = `SELECT * FROM ${this.tableName} WHERE id IN (${id})`;
         this.query(query, callback);
     }
 
     get(params, callback) {
         // Initialise query
         let query = `SELECT * FROM ${this.tableName}`;
-        let blnOr = false;
         // Filter by cohort name
         if (params.name || params.username || params.teamcode) {
             query += ` WHERE `;
         }
 
-        // Filter by username
-        if (params.username) {
-            query += ` username = '${params.username}' `;
-            blnOr = true;
-        }
-
-        // Filter by teamcode
-        if (params.teamcode) {
-            if (blnOr) {
+        Object.keys(params).forEach((param, index) => {
+            if (index) {
                 query += ` OR `;
             }
-            if (params.teamcode.includes(",")) {
-                const teamcodes = params.teamcode.split(",").join("','");
-                query += ` teamcode IN ('${teamcodes}') `;
+            if (params[param].includes(",")) {
+                const values = params[param].split(",").join("','");
+                query += ` ${param} IN ('${values}') `;
             } else {
-                query += ` teamcode = '${params.teamcode}'`;
+                query += ` ${param} = '${params[param]}'`;
             }
-        }
+        });
+
         // Run query
         this.query(query, callback);
     }
