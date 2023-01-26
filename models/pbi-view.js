@@ -49,8 +49,8 @@ class PBIView extends BaseModel {
 
                             // Re-map
                             resolve(
-                                data.Items.reduce((items, item) => {
-                                    items[item.cohortName + "#" + item.createdDT] = item;
+                                data.reduce((items, item) => {
+                                    items[item.id] = item;
                                     return items;
                                 }, {})
                             );
