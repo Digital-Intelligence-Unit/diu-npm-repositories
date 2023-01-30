@@ -62,14 +62,14 @@ class Email {
         actions.forEach((action) => {
             actionsHTML += `<a href="${messageActions[action.type]}?${new URLSearchParams(
                 action.type_params
-            ).toString()}" target="_blank" class="mat-button ${action.class}">${action.text}</a>`;
+            ).toString()}" target="_blank" class="button ${action.class}">&nbsp;${action.text}&nbsp;</a>`;
         });
 
         // Apply to template
         return juice(
             messageTemplate.replace(
                 "MESSAGE</div>",
-                `${message}</div><div class="full main mat-card action">${actionsHTML}</div>`
+                `${message}</div><div class="action">${actionsHTML}</div>`
             )
         );
     }

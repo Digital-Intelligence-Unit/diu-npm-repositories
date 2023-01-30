@@ -104,6 +104,54 @@ module.exports = {
                     padding: 15px 0px;
                     margin-bottom: 30px;
                 }
+                .message {
+                    font-size: 16px;
+                }
+                .action {
+                    text-align: center;
+                }
+                .button {
+                    border-radius: 5px;
+                    font-family: "Poppins", sans-serif !important;
+                    box-sizing: border-box;
+                    position: relative;
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
+                    cursor: pointer;
+                    outline: 0;
+                    border: none;
+                    -webkit-tap-highlight-color: transparent;
+                    display: inline-block;
+                    white-space: nowrap;
+                    text-decoration: none;
+                    vertical-align: baseline;
+                    text-align: center;
+                    margin: 2px 10px;
+                    min-width: 64px;
+                    line-height: 36px;
+                    padding: 0 16px;
+                    border-radius: 4px;
+                    overflow: visible;
+                    transform: translate3d(0,0,0);
+                    transition: background .4s cubic-bezier(.25,.8,.25,1),box-shadow 280ms cubic-bezier(.4,0,.2,1);
+                    color: white;
+                }
+                .primary {
+                    background-color: #1e88e5;
+                }
+                .accent {
+                    background-color: #3f51b5;
+                }
+                .warn {
+                    background-color: #e91e63;
+                }
+                .default {
+                    color: black !important;
+                    background-color: white;
+                    border: 1px solid darkgray;
+                }
             </style>
         </head>
 
@@ -122,10 +170,12 @@ module.exports = {
                                         <tr>
                                             <td>
                                                 <div class="logo">
-                                                    <img width="280px" src="https://www.nexusintelligencenw.nhs.uk/assets/images/nexusgenNHS.png">
+                                                    <img style="width: 280px" width="280" src="https://www.nexusintelligencenw.nhs.uk/assets/images/nexusgenNHS.png">
                                                 </div>
 
-                                                <p>MESSAGE</p>
+                                                <div class="message">MESSAGE</div>
+
+                                                <p style="margin-bottom: 0px;">Regards,<br>The Digital Intelligence Team</p>
                                             </td>
                                         </tr>
                                     </table>
