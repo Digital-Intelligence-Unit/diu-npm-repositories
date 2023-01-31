@@ -1,3 +1,4 @@
+const juice = require("juice");
 const nodemailer = require("nodemailer");
 const config = require("../config/email");
 const messageTemplate = config.message_template;
@@ -52,7 +53,7 @@ class Email {
     }
 
     static createMessage(message) {
-        return messageTemplate.replace("MESSAGE", message);
+        return juice(messageTemplate.replace("MESSAGE", message));
     }
 
     static createMessageWithActions(actions, message) {
@@ -61,11 +62,16 @@ class Email {
         actions.forEach((action) => {
             actionsHTML += `<a href="${messageActions[action.type]}?${new URLSearchParams(
                 action.type_params
-            ).toString()}" target="_blank" class="mat-button ${action.class}">${action.text}</a>`;
+            ).toString()}" target="_blank" class="button ${action.class}">&nbsp;${action.text}&nbsp;</a>`;
         });
 
         // Apply to template
-        return messageTemplate.replace("MESSAGE</div>", `${message}</div><div class="full main mat-card action">${actionsHTML}</div>`);
+        return juice(
+            messageTemplate.replace(
+                "MESSAGE</div>",
+                `${message}</div><div class="action">${actionsHTML}</div>`
+            )
+        );
     }
 }
 
