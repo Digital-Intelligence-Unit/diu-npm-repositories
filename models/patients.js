@@ -75,13 +75,13 @@ class PatientsModel extends BaseModel {
                 reason: "Access denied. Insufficient permissions to view any patients details.",
             });
         } else {
-            const query = this.selectjoin + " WHERE " + rolecheck + ` "nhs_number" = '` + nhsnumber + "'";
-            this.query(query, (error, results) => {
+            const query = this.selectjoin + " WHERE " + rolecheck + " nhs_number = $1";
+            this.query({ text: query, values: [nhsnumber] }, (error, results) => {
                 if (error) {
                     console.log("Error: " + error);
                     callback(null, error, null);
-                } else if (results && results.rows && results.rows.length > 0) {
-                    callback(null, null, results.rows);
+                } else if (results && results.length > 0) {
+                    callback(null, null, results);
                 } else {
                     this.getHistoryByNHSNumber(nhsnumber, roles, callback);
                 }
@@ -97,18 +97,14 @@ class PatientsModel extends BaseModel {
             });
         } else {
             const query =
-                this.selectjoin.replace("public.population_master", "public.population_history") +
-                " WHERE " +
-                rolecheck +
-                ` "nhs_number" = '` +
-                nhsnumber +
-                "'";
-            this.query(query, (error, results) => {
+            this.selectjoin.replace("public.population_master", "public.population_history") +
+            " WHERE " + rolecheck + "nhs_number = $1";
+            this.query({ text: query, values: [nhsnumber] }, (error, results) => {
                 if (error) {
                     console.log("Error: " + error);
                     callback(null, error, null);
-                } else if (results && results.rows) {
-                    callback(null, null, results.rows);
+                } else if (results && results.length > 0) {
+                    callback(null, null, results);
                 } else {
                     callback(null, "No rows returned", null);
                 }
@@ -117,32 +113,30 @@ class PatientsModel extends BaseModel {
     }
 
     findMyNHSNumber(resource, callback) {
-        let query =
-            `SELECT nhs_number FROM public.population_master WHERE "sex"='` +
-            resource.gender.substring(0, 1) +
-            `' AND "postcode"='` +
-            resource.postcode +
-            `' AND "date_of_birth"='` +
-            resource.dob +
-            "' LIMIT 1;";
+        let query;
         if (resource.forename) {
-            query =
-                `SELECT nhs_number FROM public.population_master WHERE "sex"='` +
-                resource.gender.substring(0, 1) +
-                `' AND "forename" ILIKE '` +
-                resource.forename +
-                `' AND "postcode"='` +
-                resource.postcode +
-                `' AND "date_of_birth"='` +
-                resource.dob +
-                "' LIMIT 1;";
+            query = {
+                text: `
+                    SELECT nhs_number FROM public.population_master 
+                    WHERE "sex" = $1 AND "forename" ILIKE $2 AND "postcode" = $3 AND "date_of_birth" = $4 LIMIT 1;`,
+                values: [resource.gender.substring(0, 1), resource.forename, resource.postcode, resource.dob]
+            };
+        } else {
+            query = {
+                text: `
+                    SELECT nhs_number FROM public.population_master 
+                    WHERE "sex" = $1 AND "postcode" = $2 AND "date_of_birth" = $3 LIMIT 1;`,
+                values: [resource.gender.substring(0, 1), resource.postcode, resource.dob]
+            };
         }
+
+        // Make request
         this.query(query, (error, results) => {
             if (error) {
                 console.log("Error: " + error);
                 callback(error, null);
-            } else if (results && results.rows.length > 0) {
-                callback(null, results.rows);
+            } else if (results && results.length > 0) {
+                callback(null, results);
             } else {
                 this.checkHistoryTableforNHSNumber(resource, callback);
             }
@@ -150,34 +144,32 @@ class PatientsModel extends BaseModel {
     }
 
     checkHistoryTableforNHSNumber(resource, callback) {
-        let query =
-            `SELECT nhs_number FROM public.population_history WHERE "sex"='` +
-            resource.gender.substring(0, 1) +
-            `' AND "postcode"='` +
-            resource.postcode +
-            `' AND "date_of_birth"='` +
-            resource.dob +
-            `' LIMIT 1;`;
+        let query;
         if (resource.forename) {
-            query =
-                `SELECT nhs_number FROM public.population_history WHERE "sex"='` +
-                resource.gender.substring(0, 1) +
-                `' AND "forename" ILIKE '` +
-                resource.forename +
-                `' AND "postcode"='` +
-                resource.postcode +
-                `' AND "date_of_birth"='` +
-                resource.dob +
-                "' LIMIT 1;";
+            query = {
+                text: `
+                    SELECT nhs_number FROM public.population_history 
+                    WHERE "sex" = $1 AND "forename" ILIKE $2 AND "postcode" = $3 AND "date_of_birth" = $4 LIMIT 1;`,
+                values: [resource.gender.substring(0, 1), resource.forename, resource.postcode, resource.dob]
+            };
+        } else {
+            query = {
+                text: `
+                    SELECT nhs_number FROM public.population_history
+                    WHERE "sex" = $1 AND "postcode" = $2 AND "date_of_birth" = $3 LIMIT 1;`,
+                values: [resource.gender.substring(0, 1), resource.postcode, resource.dob]
+            };
         }
+
+        // Make request
         this.query(query, (error, results) => {
             if (error) {
                 console.log("Error: " + error);
                 callback(error, null);
-            } else if (results && results.rows.length > 0) {
-                callback(null, results.rows);
+            } else if (results && results.length > 0) {
+                callback(null, results);
             } else {
-                callback(new Error("No rows returned"), null);
+                this.checkHistoryTableforNHSNumber(resource, callback);
             }
         });
     }
