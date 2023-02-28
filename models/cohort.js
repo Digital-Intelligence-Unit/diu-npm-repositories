@@ -68,68 +68,40 @@ class CohortModel extends BaseModel {
 
     static cohortUrlAsSqlQuery(cohorturl) {
         // Exclude fields
-        const exclusions = ["FCntDimension", "LCntDimension", "numberSelFlag", "numberSelLtc", "DDimension", "MDimension"];
+        const exclusions = ["FCntDimension", "LCntDimension", "numberSelFlag", "numberSelLtc"];
 
         // Lookups
         const LTCLookup = [
+            { dbname: "asthma", displayName: "Asthma" },
+            { dbname: "copd", displayName: "COPD" },
             { dbname: "chd", displayName: "Coronary Artery Disease" },
             { dbname: "heart_failure", displayName: "Congestive Heart Failure" },
-            { dbname: "ckd", displayName: "Chronic Kidney Disease" },
+            { dbname: "hypertension", displayName: "Hypertension" },
+            { dbname: "atrial_fibrillation", displayName: "Atrial Fibrillation" },
             { dbname: "pad", displayName: "Peripheral Artery Disease" },
+            { dbname: "cancer", displayName: "Cancer" },
+            { dbname: "depression", displayName: "Depression" },
+            { dbname: "dementia", displayName: "Dementia" },
+            { dbname: "mental_health", displayName: "Mental Health" },
+            { dbname: "learning_disabilities", displayName: "Learning Disabilities" },
+            { dbname: "diabetes", displayName: "Diabetes" },
+            { dbname: "hypothyroid", displayName: "Hypothyroid" },
+            { dbname: "ckd", displayName: "Chronic Kidney Disease" },
+            { dbname: "epilepsy", displayName: "Epilepsy" },
+            { dbname: "osteoporosis", displayName: "Osteoporosis" },
+            { dbname: "rheumatoid_arthritis", displayName: "Rheumatoid Arthritis" },
         ];
         const FlagLookup = [
-            { dbname: "D.other_shielded_category", displayName: "District Shielded", truth: " = 1" },
-            { dbname: "D.assisted_collection", displayName: "Assisted Bin Collection", truth: " = 'Y'" },
-            { dbname: "D.home_care_link", displayName: "Home Care Link", truth: " IS TRUE" },
-            { dbname: "D.single_occupancy", displayName: "Single Occupancy", truth: " = 'Y'" },
-            { dbname: "D.disabled_facilities_grant", displayName: "Disabled Facilities Grant", truth: " IS TRUE" },
-            { dbname: "D.council_tax", displayName: "Council Tax", truth: " = 'Y'" },
-            { dbname: `D."neighbourhood_linked_to_PCN"`, displayName: "Neighbourhood Linked to PCN", truth: " IS TRUE" },
-            { dbname: "D.universal_credit", displayName: "Universal Credit", truth: " IS TRUE" },
-            { dbname: "D.housing_benefit", displayName: "Housing Benefit", truth: " IS TRUE" },
-            { dbname: "D.business_grant", displayName: "Business Grant", truth: " IS TRUE" },
+            { dbname: "M.frailty_text", displayName: "Frailty - Mild", value: "Mild" },
+            { dbname: "M.frailty_text", displayName: "Frailty - Moderate", value: "Moderate" },
+            { dbname: "M.frailty_text", displayName: "Frailty - Severe", value: "Severe" },
         ];
 
         // Reusable statements
-        const nonestatement = `
-            M.asthma IS NOT TRUE AND 
-            M.chd IS NOT TRUE AND 
-            M.heart_failure IS NOT TRUE AND 
-            M.cancer IS NOT TRUE AND 
-            M.copd IS NOT TRUE AND 
-            M.depression IS NOT TRUE AND 
-            M.diabetes IS NOT TRUE AND 
-            M.hypertension IS NOT TRUE AND 
-            M.atrial_fibrillation IS NOT TRUE AND 
-            M.ckd IS NOT TRUE AND 
-            M.dementia IS NOT TRUE AND 
-            M.epilepsy IS NOT TRUE AND 
-            M.hypothyroid IS NOT TRUE AND 
-            M.mental_health IS NOT TRUE AND 
-            M.learning_disabilities IS NOT TRUE AND 
-            M.osteoporosis IS NOT TRUE AND 
-            M.pad IS NOT TRUE AND 
-            M.rheumatoid_arthritis IS NOT TRUE AND 
-            M.stroke_tia IS NOT TRUE AND 
-            M.palliative_care_flag IS NOT TRUE AND 
-            M.psychotic_disorder_flag IS NOT TRUE AND 
-            M.spl IS NOT TRUE AND 
-            M.chemo_radiotherapy IS NOT TRUE AND 
-            M.haematological_cancers IS NOT TRUE AND 
-            M.rare_diseases IS NOT TRUE AND 
-            M.respiratory IS NOT TRUE`;
-        const noneflagstatement = `
-            D.other_shielded_category IS NULL AND 
-            D.assisted_collection IS NULL AND 
-            D.home_care_link IS NOT TRUE AND 
-            D.single_occupancy IS NULL AND 
-            D.disabled_facilities_grant IS NOT TRUE AND 
-            D.council_tax IS NULL AND 
-            D."neighbourhood_linked_to_PCN" IS NOT TRUE AND 
-            D.universal_credit IS NOT TRUE AND 
-            D.housing_benefit IS NOT TRUE AND 
-            D.business_grant IS NOT TRUE`;
-
+        const nonestatement = LTCLookup.map((item, index) => {
+            return "M." + item.dbname + " IS NOT TRUE";
+        }).join(" AND ");
+        const noneflagstatement = `M.frailty_text = ""`;
 
         // Key to field name
         const convertKeytoField = (dimensionName) => {
@@ -143,7 +115,9 @@ class CohortModel extends BaseModel {
                 CCGDimension: "M.ccg_code",
                 LTCs2Dimension: "",
                 MatrixDimension: "",
-                Flags2Dimension: ""
+                Flags2Dimension: "",
+                DDimension: "M.deprivation_decile",
+                MDimension: "M.mosaic_label"
             };
             return fieldKeys.hasOwnProperty(dimensionName) ? fieldKeys[dimensionName] : "nhs_number";
         };
@@ -176,6 +150,8 @@ class CohortModel extends BaseModel {
                 GPDimension: arrayToSql,
                 WDimension: arrayToSql,
                 CCGDimension: arrayToSql,
+                DDimension: arrayToSql,
+                MDimension: arrayToSql,
                 AgeDimension: (value) => {
                     return " >= " + value[0][0] + " AND M.age <= " + value[0][1];
                 },
@@ -190,36 +166,43 @@ class CohortModel extends BaseModel {
                     if (noneflag) {
                         return "(" + nonestatement + ")";
                     } else {
+                        const allData = JSON.parse(cohorturl);
                         let statement = " (";
                         value.forEach((element) => {
-                            const lookup = LTCLookup.filter((x) => x.displayName === element[0]);
+                            const lookup = LTCLookup.filter((x) => x.displayName === element);
                             if (lookup.length > 0) {
-                                statement += lookup[0].dbname + " IS TRUE AND ";
+                                statement += "cast(" + lookup[0].dbname + " as integer) + ";
                             } else {
-                                statement += element[0].toLowerCase().split(" ").join("_") + " IS TRUE AND ";
+                                statement += "cast(" + element.toLowerCase().split(" ").join("_") + " as integer) + ";
                             }
                         });
-                        return statement.substr(0, statement.length - 4) + ")";
+                        statement = statement.substr(0, statement.length - 2) + getLtcCount(allData) + ")";
+                        return statement;
                     }
                 },
                 Flags2Dimension: (value) => {
-                    let noneflag2 = false;
+                    let noneflag = false;
                     value.forEach((element) => {
-                        if (element[0] === "None") noneflag2 = true;
+                        if (element[0] === "None") noneflag = true;
                     });
-                    if (noneflag2) {
+                    if (noneflag) {
                         return "(" + noneflagstatement + ")";
                     } else {
-                        let statement2 = " (";
-                        value.forEach((element) => {
-                            const lookup = FlagLookup.filter((x) => x.displayName === element[0]);
+                        let statement = "(";
+                        value.forEach(element => {
+                            console.log(element);
+                            const lookup = FlagLookup.filter((x) => x.displayName === element);
+                            console.log(lookup);
                             if (lookup.length > 0) {
-                                statement2 += lookup[0].dbname + lookup[0].truth + " AND ";
-                            } else {
-                                statement2 += element[0].toLowerCase().split(" ").join("_") + " IS TRUE AND ";
+                                if (statement === "(") {
+                                    statement += lookup[0].dbname + " = " + "'" + lookup[0].value + "'";
+                                } else {
+                                    statement += " AND " + lookup[0].dbname + " = " + "'" + lookup[0].value + "'";
+                                }
                             }
                         });
-                        return statement2.substr(0, statement2.length - 4) + ")";
+                        statement += ")";
+                        return statement;
                     }
                 },
                 MatrixDimension: (value) => {
@@ -235,7 +218,14 @@ class CohortModel extends BaseModel {
                     });
                     whereClause = ` (${whereClause}) `;
                     return whereClause;
+                },
+            };
+
+            const getLtcCount = (allData) => {
+                if (allData["LCntDimension"] && allData["LCntDimension"] > 0) {
+                    return " = " + allData["LCntDimension"];
                 }
+                return " > 0";
             };
             return fieldValueMap.hasOwnProperty(dimensionName) ? fieldValueMap[dimensionName](fieldValue) : " = '0000000000'";
         };
