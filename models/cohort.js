@@ -190,9 +190,7 @@ class CohortModel extends BaseModel {
                     } else {
                         let statement = "(";
                         value.forEach(element => {
-                            console.log(element);
                             const lookup = FlagLookup.filter((x) => x.displayName === element);
-                            console.log(lookup);
                             if (lookup.length > 0) {
                                 if (statement === "(") {
                                     statement += lookup[0].dbname + " = " + "'" + lookup[0].value + "'";
