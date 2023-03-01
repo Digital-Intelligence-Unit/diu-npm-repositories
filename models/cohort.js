@@ -137,7 +137,7 @@ class CohortModel extends BaseModel {
                     return list.substr(0, list.length - 1) + ")";
                 }
             };
-            
+
             const arrayToSqlAcorn = (array) => {
                 if (array.length === 0) return " IS NOT NULL ";
                 else if (array.length === 1) return " = '" + array[0] + "'";
