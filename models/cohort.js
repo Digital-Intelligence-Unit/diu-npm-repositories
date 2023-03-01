@@ -68,7 +68,7 @@ class CohortModel extends BaseModel {
 
     static cohortUrlAsSqlQuery(cohorturl) {
         // Exclude fields
-        const exclusions = ["FCntDimension", "LCntDimension", "numberSelFlag", "numberSelLtc"];
+        const exclusions = ["FCntDimension", "numberSelFlag", "numberSelLtc"];
 
         // Lookups
         const LTCLookup = [
@@ -96,7 +96,6 @@ class CohortModel extends BaseModel {
             { dbname: "M.frailty_text", displayName: "Frailty - Moderate", value: "Moderate" },
             { dbname: "M.frailty_text", displayName: "Frailty - Severe", value: "Severe" },
         ];
-
         // Reusable statements
         const nonestatement = LTCLookup.map((item, index) => {
             return "M." + item.dbname + " IS NOT TRUE";
@@ -114,10 +113,12 @@ class CohortModel extends BaseModel {
                 LDimension: "M.pcn",
                 CCGDimension: "M.ccg_code",
                 LTCs2Dimension: "",
+                LCntDimension: "",
                 MatrixDimension: "",
                 Flags2Dimension: "",
                 DDimension: "M.deprivation_decile",
-                MDimension: "M.mosaic_label"
+                MDimension: "M.mosaic_label",
+                ADimension: "M.household_type"
             };
             return fieldKeys.hasOwnProperty(dimensionName) ? fieldKeys[dimensionName] : "nhs_number";
         };
@@ -132,6 +133,18 @@ class CohortModel extends BaseModel {
                     let list = " in (";
                     array.forEach((element) => {
                         list += "'" + element + "',";
+                    });
+                    return list.substr(0, list.length - 1) + ")";
+                }
+            };
+
+            const arrayToSqlAcorn = (array) => {
+                if (array.length === 0) return " IS NOT NULL ";
+                else if (array.length === 1) return " = '" + array[0] + "'";
+                else {
+                    let list = " in (";
+                    array.forEach((element) => {
+                        list += "'" + element.slice(1) + "',";
                     });
                     return list.substr(0, list.length - 1) + ")";
                 }
@@ -152,6 +165,20 @@ class CohortModel extends BaseModel {
                 CCGDimension: arrayToSql,
                 DDimension: arrayToSql,
                 MDimension: arrayToSql,
+                ADimension: arrayToSqlAcorn,
+                LCntDimension: (value) => {
+                    const LTCStatement = LTCLookup.map((item, index) => {
+                        return "cast(" + item.dbname + " as integer)";
+                    }).join(" + ");
+                    const arrStatements = value.map((data, index) => {
+                        let operator = " = ";
+                        if (data.trim() === "5") {
+                            operator = " >= ";
+                        }
+                        return "((" + LTCStatement + ") " + operator + data + ")";
+                    });
+                    return "(" + arrStatements.join(" OR ") + ")";
+                },
                 AgeDimension: (value) => {
                     return " >= " + value[0][0] + " AND M.age <= " + value[0][1];
                 },
@@ -176,7 +203,7 @@ class CohortModel extends BaseModel {
                                 statement += "cast(" + element.toLowerCase().split(" ").join("_") + " as integer) + ";
                             }
                         });
-                        statement = statement.substr(0, statement.length - 2) + getLtcCount(allData) + ")";
+                        statement = statement.substr(0, statement.length - 2) + getLtcSelected(allData) + ")";
                         return statement;
                     }
                 },
@@ -219,9 +246,9 @@ class CohortModel extends BaseModel {
                 },
             };
 
-            const getLtcCount = (allData) => {
-                if (allData["LCntDimension"] && allData["LCntDimension"] > 0) {
-                    return " = " + allData["LCntDimension"];
+            const getLtcSelected = (allData) => {
+                if (allData["numberSelLtc"] && allData["numberSelLtc"] > 0) {
+                    return " = " + allData["numberSelLtc"];
                 }
                 return " > 0";
             };
