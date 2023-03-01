@@ -35,12 +35,7 @@ class PatientsModel extends BaseModel {
                 reason: "Access denied. Insufficient permissions to view any patients details.",
             });
         } else {
-            console.log("cohort");
-            console.log(cohort);
-            console.log("CohortModel.cohortUrlAsSqlQuery(cohort)");
-            console.log(CohortModel.cohortUrlAsSqlQuery(cohort));
             const query = this.selectjoin + " WHERE " + CohortModel.cohortUrlAsSqlQuery(cohort) + " LIMIT " + limit;
-            console.log(query);
             this.query(query, (error, results) => {
                 if (error) {
                     console.log("Error: " + error);
