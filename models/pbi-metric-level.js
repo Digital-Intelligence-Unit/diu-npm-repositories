@@ -6,14 +6,7 @@ class PBIMetricLevel extends BaseModel {
         // Select all
         this.query(
             {
-                text: `
-                    SELECT *, array(
-                        SELECT metric_period from ${this.tableName} pl
-                        WHERE pl.metric_level_id = ${this.tableName}.metric_level_id 
-                        GROUP BY pl.metric_period 
-                        ORDER BY pl.metric_period DESC
-                    ) AS periods FROM ${this.tableName} WHERE metric_id = $1                  
-                `,
+                text: `SELECT * FROM ${this.tableName} WHERE metric_id = $1 ORDER BY metric_level ASC`,
                 values: [id],
             },
             (err, result) => {
