@@ -23,7 +23,8 @@ class PBIMetric extends BaseModel {
 
     getByFilters(filters = {}, callback) {
         // Create conditions
-        const whereQuery = { conditions: [], values: [] };
+        filters.page_limit = filters.page_limit || 25;
+        const whereQuery = { conditions: [], values: [filters.page_limit, (filters.page - 1 || 0) * filters.page_limit] };
 
         // Filter by name?
         if (filters.name) {
@@ -35,22 +36,21 @@ class PBIMetric extends BaseModel {
         if (filters.category) {
             whereQuery.conditions.push(`
                 (
-                    category_id = $${(whereQuery.conditions.length + 1)} OR
+                    category_id = $${(whereQuery.values.length + 1)} OR
                     category_id IN (
-                        SELECT category_id FROM pbi_categories WHERE category_parent_id = $${(whereQuery.conditions.length + 2)}
+                        SELECT category_id FROM pbi_categories WHERE category_parent_id = $${(whereQuery.values.length + 1)}
                     )
                 )
             `);
-            whereQuery.values = whereQuery.values.concat([filters.category, filters.category]);
+            whereQuery.values = whereQuery.values.concat([filters.category]);
         }
 
         // Filter query
         this.query(
             {
-                text: `
-                    SELECT * FROM ${this.tableName}` + (
+                text: `SELECT * FROM ${this.tableName}` + (
                     whereQuery.conditions.length > 0 ? " WHERE " + whereQuery.conditions.join(" AND ") : ""
-                ),
+                ) + ` ORDER BY length(metric_name), metric_name LIMIT $1 OFFSET $2`,
                 values: whereQuery.values,
             },
             (err, result) => {
