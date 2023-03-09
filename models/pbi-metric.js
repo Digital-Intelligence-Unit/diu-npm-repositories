@@ -28,7 +28,7 @@ class PBIMetric extends BaseModel {
 
         // Filter by name?
         if (filters.name) {
-            whereQuery.conditions.push("metric_name ILIKE $1");
+            whereQuery.conditions.push(`metric_name ILIKE $${(whereQuery.values.length + 1)}`);
             whereQuery.values.push("%" + filters.name + "%");
         }
 
