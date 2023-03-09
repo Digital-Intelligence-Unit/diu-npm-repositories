@@ -28,12 +28,8 @@ class PBIMetric extends BaseModel {
 
         // Filter by name?
         if (filters.name) {
-            whereQuery.conditions.push(`(
-                metric_name ILIKE $${(whereQuery.values.length + 1)} OR category_id IN (
-                    SELECT category_id FROM pbi_categories WHERE category_name LIKE $${(whereQuery.values.length + 1)}
-                )
-            )`);
-            whereQuery.values = whereQuery.values.concat(["%" + filters.name + "%"]);
+            whereQuery.conditions.push(`metric_name ILIKE $${(whereQuery.values.length + 1)}`);
+            whereQuery.values.push("%" + filters.name + "%");
         }
 
         // Filter by category?
