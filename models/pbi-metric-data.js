@@ -35,7 +35,7 @@ class PBIMetricData extends BaseModel {
         });
     }
 
-    getByMetricLevelId(id, filters = { geo_year: null }, callback) {
+    getByMetricLevelId(id, filters = {}, callback) {
         // Select all
         const query = {
             text: `
@@ -44,21 +44,14 @@ class PBIMetricData extends BaseModel {
                 FROM pbi_metrics_level
                 LEFT JOIN pbi_metrics_data ON pbi_metrics_level.metric_level_id = pbi_metrics_data.metric_level_id
                 WHERE pbi_metrics_level.metric_level_id = $1
-                AND pbi_metrics_level.metric_period = $2
             )
             SELECT pbi_metrics_level_data.*, pbi_geographies.geo_name, 
             pbi_geographies.geo_year, ST_AsGeoJSON(pbi_geographies.geom) as geojson
             FROM pbi_metrics_level_data
             LEFT JOIN pbi_geographies ON pbi_geographies.geo_id = pbi_metrics_level_data.geo_id
-            WHERE pbi_geographies.geom IS NOT NULL`,
-            values: [id, filters.period],
+            WHERE pbi_geographies.geom IS NOT NULL AND pbi_geographies.geo_year IS NOT DISTINCT FROM pbi_metrics_level_data.geog_year`,
+            values: [id],
         };
-
-        // Filter geo year?
-        if (filters.geo_year) {
-            query.text += ` AND pbi_geographies.geo_year = $3`;
-            query.values.push(filters.geo_year);
-        }
 
         // Dynamic filter?
         if (filters.value_operator && filters.value) {

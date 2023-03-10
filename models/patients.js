@@ -13,7 +13,6 @@ class PatientsModel extends BaseModel {
                 reason: "Access denied. Insufficient permissions to view any patients details.",
             });
         } else {
-            console.log(rolecheck);
             const query = this.selectjoin + rolecheck + " LIMIT " + limit;
             this.query(query, (error, results) => {
                 if (error) {
