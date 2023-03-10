@@ -22,21 +22,35 @@ class CVICohortModel extends BaseModel {
         if (params.name || params.username || params.teamcode) {
             query += ` WHERE `;
         }
-
+        const values = [];
+        let counter = 1;
+        const replacementPrefix = "$";
+        let replacementNumber = "";
         Object.keys(params).forEach((param, index) => {
             if (index) {
                 query += ` OR `;
             }
             if (params[param].includes(",")) {
-                const values = params[param].split(",").join("','");
-                query += ` ${param} IN ('${values}') `;
+                const replacements = params[param].split(",").map(value => {
+                    values.push(value);
+                    replacementNumber = replacementPrefix + counter;
+                    counter++;
+                    return replacementNumber;
+                }).join(",");
+                query += ` ${param} IN (${replacements}) `;
             } else {
-                query += ` ${param} = '${params[param]}'`;
+                values.push(params[param]);
+                replacementNumber = replacementPrefix + counter;
+                counter++;
+                query += ` ${param} = ${replacementNumber}`;
             }
         });
-
+        const objQuery = {
+            text: query,
+            values,
+        };
         // Run query
-        this.query(query, callback);
+        this.query(objQuery, callback);
     }
 }
 
