@@ -13,7 +13,8 @@ class PatientsModel extends BaseModel {
                 reason: "Access denied. Insufficient permissions to view any patients details.",
             });
         } else {
-            const query = this.selectjoin + rolecheck + " LIMIT " + limit;
+            const query = this.selectjoin + rolecheck + ` ORDER BY "nhs_number" LIMIT ` + limit;
+            console.log(query);
             this.query(query, (error, results) => {
                 if (error) {
                     console.log("Error: " + error);
@@ -27,15 +28,15 @@ class PatientsModel extends BaseModel {
         }
     }
 
-    getAllByCohort(limit, cohort, roles, callback) {
+    getAllByCohort(queryParams, cohort, roles, callback) {
         const rolecheck = PermissionsHelper.capabilitiesAsSqlQuery(roles, "populationjoined", "M", false);
         if (rolecheck === "" || rolecheck === "error") {
             callback(new Error("Invalid Permissions"), null, {
                 reason: "Access denied. Insufficient permissions to view any patients details.",
             });
         } else {
-            const query = this.selectjoin + " WHERE " + CohortModel.cohortUrlAsSqlQuery(cohort) + " LIMIT " + limit;
-            this.query(query, (error, results) => {
+            const query = this.selectjoin + " WHERE " + CohortModel.cohortUrlAsSqlQuery(cohort) + " ORDER BY nhs_number";
+            this.queryWithParams(query, queryParams, (error, results) => {
                 if (error) {
                     console.log("Error: " + error);
                     callback(null, "Error:" + error, null);
@@ -64,6 +65,27 @@ class PatientsModel extends BaseModel {
                     callback(null, null, results);
                 } else {
                     this.getHistoryByNHSNumber(nhsnumber, roles, callback);
+                }
+            });
+        }
+    }
+
+    getPersonByDigest(digest, roles, callback) {
+        const rolecheck = PermissionsHelper.capabilitiesAsSqlQuery(roles, "populationjoined", "M", false);
+        if (rolecheck === "" || rolecheck === "error") {
+            callback(new Error("Invalid Permissions"), null, {
+                reason: "Access denied. Insufficient permissions to view any patients details.",
+            });
+        } else {
+            const query = this.selectjoin + " WHERE " + rolecheck + " testdigest = $1";
+            this.query({ text: query, values: [digest] }, (error, results) => {
+                if (error) {
+                    console.log("Error: " + error);
+                    callback(null, error, null);
+                } else if (results && results.length > 0) {
+                    callback(null, null, results);
+                } else {
+                    callback(null, "Could not find your patient", null);
                 }
             });
         }

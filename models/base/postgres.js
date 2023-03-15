@@ -26,14 +26,82 @@ class BasePostgresModel {
 
                 // Return errors?
                 if (errQuery) {
-                    const errQueryResponse = {
-                        23505: "Item already exists"
-                    }[errQuery.code] || "Error executing query";
+                    const errQueryResponse =
+                        {
+                            23505: "Item already exists",
+                        }[errQuery.code] || "Error executing query";
                     console.error(errQueryResponse, errQuery.stack);
                     callback(errQueryResponse, null);
                     return;
                 }
+                // Return rows
+                callback(null, result.rows || null);
+            });
+        });
+    }
 
+    addParams(query, params) {
+        if (params.count) {
+            const arrQuery = query.split("FROM");
+            query = "SELECT count(*) FROM " + arrQuery[1];
+            return query;
+        }
+        if (params.groupBy) {
+            query += " GROUP BY " + params.groupBy;
+        }
+        if (params.orderBy) {
+            query += " ORDER BY " + params.orderBy;
+        }
+        if (params.orderBy && params.orderByDirection) {
+            switch (params.orderByDirection.toUpperCase()) {
+                case "ASC":
+                case "DESC":
+                    query += " " + params.orderByDirection.toUpperCase();
+                    break;
+                default:
+                    // do nothing
+                    break;
+            }
+        }
+        if (params.offset) {
+            query += " OFFSET " + params.offset;
+        }
+        if (params.limit) {
+            query += " LIMIT " + params.limit;
+        }
+        return query;
+    }
+
+    queryWithParams(query, params, callback) {
+        // Connect to client
+        this.pool.connect((err, client, release) => {
+            // Error?
+            if (err) {
+                const errReponse = "Error acquiring client";
+                console.error(errReponse, err.stack);
+                callback(errReponse, null);
+                return;
+            }
+            if (typeof query === "string") {
+                query = this.addParams(query, params);
+            } else {
+                query.text = this.addParams(query.text, params);
+            }
+            // Make query
+            client.query(query, (errQuery, result) => {
+                // Release connection
+                release();
+
+                // Return errors?
+                if (errQuery) {
+                    const errQueryResponse =
+                        {
+                            23505: "Item already exists",
+                        }[errQuery.code] || "Error executing query";
+                    console.error(errQueryResponse, errQuery.stack);
+                    callback(errQueryResponse, null);
+                    return;
+                }
                 // Return rows
                 callback(null, result.rows || null);
             });
@@ -47,9 +115,10 @@ class BasePostgresModel {
             attributes = PostgresHelper.marshallAttributes(attributes);
 
             // Build query
-            let query = `INSERT INTO ${this.tableName}(${Object.keys(attributes).map(key => "\"" + key + "\"").join(", ")})`;
+            let query = `INSERT INTO ${this.tableName}(${Object.keys(attributes)
+                .map((key) => '"' + key + '"')
+                .join(", ")})`;
             query += " VALUES(" + [...Array(Object.values(attributes).length)].map((u, i) => "$" + (i + 1)) + ") RETURNING *";
-
             // Make query
             this.query({ text: query, values: Object.values(attributes) }, callback);
         } else {
@@ -58,7 +127,7 @@ class BasePostgresModel {
             const values = [];
 
             // Create query
-            let query = `INSERT INTO ${this.tableName}(${keys.map(key => "\"" + key + "\"").join(", ")})  VALUES `;
+            let query = `INSERT INTO ${this.tableName}(${keys.map((key) => '"' + key + '"').join(", ")})  VALUES `;
 
             // Loop through items
             attributes.forEach((item) => {
@@ -73,10 +142,8 @@ class BasePostgresModel {
                     values.push(item[key] || null);
                 });
             });
-
             // Remove trailing comma
             query = query.slice(0, -2) + " RETURNING *";
-
             // Make query
             this.query({ text: query, values }, callback);
         }
@@ -103,7 +170,7 @@ class BasePostgresModel {
 
         let index = 1;
         for (const column in attributes) {
-            query += "\"" + column + "\" = $" + index + ", ";
+            query += '"' + column + '" = $' + index + ", ";
             index++;
         }
         query = query.slice(0, -2) + ` WHERE ${this.primaryKey} = '${primaryKeyValue}' RETURNING *`;
