@@ -116,7 +116,7 @@ class BasePostgresModel {
 
             // Build query
             let query = `INSERT INTO ${this.tableName}(${Object.keys(attributes)
-                .map((key) => '"' + key + '"')
+                .map((key) => "\"" + key + "\"")
                 .join(", ")})`;
             query += " VALUES(" + [...Array(Object.values(attributes).length)].map((u, i) => "$" + (i + 1)) + ") RETURNING *";
             // Make query
@@ -127,7 +127,7 @@ class BasePostgresModel {
             const values = [];
 
             // Create query
-            let query = `INSERT INTO ${this.tableName}(${keys.map((key) => '"' + key + '"').join(", ")})  VALUES `;
+            let query = `INSERT INTO ${this.tableName}(${keys.map((key) => "\"" + key + "\"").join(", ")})  VALUES `;
 
             // Loop through items
             attributes.forEach((item) => {
@@ -170,7 +170,7 @@ class BasePostgresModel {
 
         let index = 1;
         for (const column in attributes) {
-            query += '"' + column + '" = $' + index + ", ";
+            query += "\"" + column + "\" = $" + index + ", ";
             index++;
         }
         query = query.slice(0, -2) + ` WHERE ${this.primaryKey} = '${primaryKeyValue}' RETURNING *`;
