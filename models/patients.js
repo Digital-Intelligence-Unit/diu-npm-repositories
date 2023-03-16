@@ -14,7 +14,6 @@ class PatientsModel extends BaseModel {
             });
         } else {
             const query = this.selectjoin + rolecheck + ` ORDER BY "nhs_number" LIMIT ` + limit;
-            console.log(query);
             this.query(query, (error, results) => {
                 if (error) {
                     console.log("Error: " + error);
