@@ -14,7 +14,6 @@ class PatientsModel extends BaseModel {
             });
         } else {
             const query = this.selectjoin + rolecheck + ` ORDER BY "nhs_number" LIMIT ` + limit;
-            console.log(query);
             this.query(query, (error, results) => {
                 if (error) {
                     console.log("Error: " + error);
@@ -35,7 +34,7 @@ class PatientsModel extends BaseModel {
                 reason: "Access denied. Insufficient permissions to view any patients details.",
             });
         } else {
-            const query = this.selectjoin + " WHERE " + CohortModel.cohortUrlAsSqlQuery(cohort) + " ORDER BY nhs_number";
+            const query = this.selectjoin + " WHERE " + CohortModel.cohortUrlAsSqlQuery(cohort);
             this.queryWithParams(query, queryParams, (error, results) => {
                 if (error) {
                     console.log("Error: " + error);
