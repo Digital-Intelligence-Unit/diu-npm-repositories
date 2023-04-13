@@ -118,7 +118,9 @@ class CohortModel extends BaseModel {
                 Flags2Dimension: "",
                 DDimension: "M.deprivation_decile",
                 MDimension: "M.mosaic_label",
-                ADimension: "M.household_type"
+                ADimension: "M.household_type",
+                DUDimension: "M.du",
+                LADimension: "M.local_authority",
             };
             return fieldKeys.hasOwnProperty(dimensionName) ? fieldKeys[dimensionName] : "nhs_number";
         };
@@ -165,6 +167,8 @@ class CohortModel extends BaseModel {
                 CCGDimension: arrayToSql,
                 DDimension: arrayToSql,
                 MDimension: arrayToSql,
+                DUDimension: arrayToSql,
+                LADimension: arrayToSql,
                 ADimension: arrayToSqlAcorn,
                 LCntDimension: (value) => {
                     const LTCStatement = LTCLookup.map((item, index) => {
