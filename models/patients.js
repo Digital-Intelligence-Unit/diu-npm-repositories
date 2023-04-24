@@ -6,7 +6,7 @@ const CohortModel = require("./cohort");
 class PatientsModel extends BaseModel {
     selectjoin = `SELECT M.sex,M.age,M.risk_score_int,M.asthma,M.copd,M.chd,M.heart_failure,
     M.hypertension,M.atrial_fibrillation,M.pad,M.cancer,M.depression,M.dementia,M.mental_health,M.learning_disabilities,M.diabetes,
-    M.hypothyroid,M.ckd,M.epilepsy,M.osteoporosis,M.rheumatoid_arthritis,M.execution_date FROM population_master as M`;
+    M.hypothyroid,M.ckd,M.epilepsy,M.osteoporosis,M.rheumatoid_arthritis,M.execution_date, M.test_digest FROM population_master as M`;
 
     getAll(limit, roles, callback) {
         const rolecheck = PermissionsHelper.capabilitiesAsSqlQuery(roles, "populationjoined", "M", true);
