@@ -251,8 +251,8 @@ class CohortModel extends BaseModel {
             };
 
             const getLtcSelected = (allData) => {
-                if (allData["numberSelLtc"] && allData["numberSelLtc"] > 0) {
-                    return " = " + allData["numberSelLtc"];
+                if (allData["numberSelLtc"] && allData["numberSelLtc"].length > 0) {
+                    return " IN (" + allData["numberSelLtc"].join(",") + ")";
                 }
                 return " > 0";
             };
