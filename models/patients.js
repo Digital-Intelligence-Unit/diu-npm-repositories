@@ -41,7 +41,6 @@ class PatientsModel extends BaseModel {
             if (cohort) {
                 query += " WHERE " + CohortModel.cohortUrlAsSqlQuery(cohort);
             }
-            console.log(query);
             this.queryWithParams(query, queryParams, (error, results) => {
                 if (error) {
                     console.log("Error: " + error);
