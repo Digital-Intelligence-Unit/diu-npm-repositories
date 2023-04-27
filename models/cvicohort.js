@@ -20,16 +20,13 @@ class CVICohortModel extends BaseModel {
         let query = `SELECT * FROM ${this.tableName}`;
         // Filter by cohort name
         if (params.name || params.username || params.teamcode) {
-            query += ` WHERE `;
+            query += ` WHERE global = true `;
         }
         const values = [];
         let counter = 1;
         const replacementPrefix = "$";
         let replacementNumber = "";
         Object.keys(params).forEach((param, index) => {
-            if (index) {
-                query += ` OR `;
-            }
             if (params[param].includes(",")) {
                 const replacements = params[param].split(",").map(value => {
                     values.push(value);
@@ -37,12 +34,12 @@ class CVICohortModel extends BaseModel {
                     counter++;
                     return replacementNumber;
                 }).join(",");
-                query += ` ${param} IN (${replacements}) `;
+                query += ` OR ${param} IN (${replacements}) `;
             } else {
                 values.push(params[param]);
                 replacementNumber = replacementPrefix + counter;
                 counter++;
-                query += ` ${param} = ${replacementNumber}`;
+                query += ` OR ${param} = ${replacementNumber}`;
             }
         });
         const objQuery = {

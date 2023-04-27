@@ -7,7 +7,7 @@ class PatientsModel extends BaseModel {
     selectjoin = `SELECT M.sex,M.age,M.risk_score_int,M.asthma,M.copd,M.chd,M.heart_failure,
     M.hypertension,M.atrial_fibrillation,M.pad,M.cancer,M.depression,M.dementia,M.mental_health,M.learning_disabilities,M.diabetes,
     M.hypothyroid,M.ckd,M.epilepsy,M.osteoporosis,M.rheumatoid_arthritis,M.execution_date, M.testdigest, M.wellbeing_acorn_type,
-    M.household_group,M.household_type,M.mosaic_label FROM population_master as M`;
+    M.household_group,M.household_type,M.mosaic_label,M.gpp_code,M.frailty_text FROM population_master as M`;
 
     getAll(limit, roles, callback) {
         const rolecheck = PermissionsHelper.capabilitiesAsSqlQuery(roles, "populationjoined", "M", true);
@@ -41,7 +41,6 @@ class PatientsModel extends BaseModel {
             if (cohort) {
                 query += " WHERE " + CohortModel.cohortUrlAsSqlQuery(cohort);
             }
-            console.log(query);
             this.queryWithParams(query, queryParams, (error, results) => {
                 if (error) {
                     console.log("Error: " + error);
@@ -83,7 +82,8 @@ class PatientsModel extends BaseModel {
                 reason: "Access denied. Insufficient permissions to view any patients details.",
             });
         } else {
-            const query = this.selectjoin + " WHERE " + rolecheck + " testdigest = $1";
+            const query = this.selectjoin + " WHERE " + rolecheck + " testdigest = $1 LIMIT 1";
+            console.log(query);
             this.query({ text: query, values: [digest] }, (error, results) => {
                 if (error) {
                     console.log("Error: " + error);

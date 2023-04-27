@@ -187,7 +187,7 @@ class CohortModel extends BaseModel {
                     return " >= " + value[0][0] + " AND M.age <= " + value[0][1];
                 },
                 RskDimension: (value) => {
-                    return " >= " + value[0][0] + " AND M.risk_score_int <= " + value[0][1];
+                    return " >= " + value[0] + " AND M.risk_score_int <= " + value[1];
                 },
                 LTCs2Dimension: (value) => {
                     let noneflag = false;
