@@ -40,38 +40,6 @@ class BasePostgresModel {
         });
     }
 
-    addParams(query, params) {
-        if (params.count) {
-            const arrQuery = query.split("FROM");
-            query = "SELECT count(*) FROM " + arrQuery[1];
-            return query;
-        }
-        if (params.groupBy) {
-            query += " GROUP BY " + params.groupBy;
-        }
-        if (params.orderBy) {
-            query += " ORDER BY " + params.orderBy;
-        }
-        if (params.orderBy && params.orderByDirection) {
-            switch (params.orderByDirection.toUpperCase()) {
-                case "ASC":
-                case "DESC":
-                    query += " " + params.orderByDirection.toUpperCase();
-                    break;
-                default:
-                    // do nothing
-                    break;
-            }
-        }
-        if (params.offset) {
-            query += " OFFSET " + params.offset;
-        }
-        if (params.limit) {
-            query += " LIMIT " + params.limit;
-        }
-        return query;
-    }
-
     queryWithParams(query, params, callback) {
         // Connect to client
         this.pool.connect((err, client, release) => {
@@ -82,11 +50,13 @@ class BasePostgresModel {
                 callback(errReponse, null);
                 return;
             }
+
             if (typeof query === "string") {
-                query = this.addParams(query, params);
+                query = this._addParams(query, params);
             } else {
-                query.text = this.addParams(query.text, params);
+                query.text = this._addParams(query.text, params);
             }
+
             // Make query
             client.query(query, (errQuery, result) => {
                 // Release connection
@@ -102,10 +72,53 @@ class BasePostgresModel {
                     callback(errQueryResponse, null);
                     return;
                 }
+
                 // Return rows
                 callback(null, result.rows || null);
             });
         });
+    }
+
+    _addParams(query, params) {
+        // Add count
+        if (params.count) {
+            const arrQuery = query.split("FROM");
+            query = "SELECT count(*) FROM " + arrQuery[1];
+            return query;
+        }
+
+        // Add group by
+        if (params.groupBy) {
+            query += " GROUP BY " + params.groupBy;
+        }
+
+        // Add order by
+        if (params.orderBy) {
+            query += " ORDER BY " + params.orderBy;
+        }
+        if (params.orderBy && params.orderByDirection) {
+            switch (params.orderByDirection.toUpperCase()) {
+                case "ASC":
+                case "DESC":
+                    query += " " + params.orderByDirection.toUpperCase();
+                    break;
+                default:
+                    // do nothing
+                    break;
+            }
+        }
+
+        // Add offset
+        if (params.offset) {
+            query += " OFFSET " + params.offset;
+        }
+
+        // Add limit
+        if (params.limit) {
+            query += " LIMIT " + params.limit;
+        }
+
+        return query;
     }
 
     create(attributes, callback) {
