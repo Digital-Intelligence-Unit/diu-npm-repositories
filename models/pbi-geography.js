@@ -16,8 +16,8 @@ class PBIGeography extends BaseModel {
 
         // Add in name
         if (filters["name"]) {
-            whereQuery.conditions.push(`geo_name ILIKE %$${(whereQuery.values.length + 1)}%`);
-            whereQuery.values.push(filters["name"]);
+            whereQuery.conditions.push(`geo_name ILIKE $${(whereQuery.values.length + 1)}`);
+            whereQuery.values.push("%" + filters["name"] + "%");
         }
 
         // Create query
