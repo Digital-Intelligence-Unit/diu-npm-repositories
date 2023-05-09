@@ -44,6 +44,23 @@ class Middleware {
         };
     }
 
+    static userMFAAuthorised(req, res, next) {
+        try {
+            // Parse JWT from user
+            const user = JWT.decode(req.header("authorization").replace("JWT ", ""));
+            if (user.mfa) {
+                next();
+            } else {
+                res.status(403).json({
+                    success: false,
+                    msg: "You must authenticate with MFA before making this request",
+                });
+            }
+        } catch (e) {
+            res.status(500).json({ success: false, msg: "An error occurred authorising your request" });
+        }
+    }
+
     static userHasCapability(capabilities) {
         return (req, res, next) => {
             try {
