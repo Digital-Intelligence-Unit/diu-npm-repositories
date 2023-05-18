@@ -46,7 +46,7 @@ class PBIMetricData extends BaseModel {
                 WHERE pbi_metrics_level.metric_level_id = $1
             )
             SELECT pbi_metrics_level_data.*, pbi_geographies.geo_name, 
-            pbi_geographies.geo_year, ST_AsGeoJSON(pbi_geographies.geom) as geojson
+            pbi_geographies.geo_year, ST_AsGeoJSON(ST_Simplify(pbi_geographies.geom, 0.000075, TRUE)) as geojson
             FROM pbi_metrics_level_data
             LEFT JOIN pbi_geographies ON pbi_geographies.geo_id = pbi_metrics_level_data.geo_id
             WHERE pbi_geographies.geom IS NOT NULL AND pbi_geographies.geo_year IS NOT DISTINCT FROM pbi_metrics_level_data.geog_year`,
