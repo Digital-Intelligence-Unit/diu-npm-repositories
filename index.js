@@ -61,6 +61,7 @@ const Helpers = {
     Validator: require("./helpers/validator"),
     MsTeams: require("./helpers/ms-teams"),
     Permissions: require("./helpers/permissions"),
+    S3: require("./helpers/s3")
 };
 
 // Exports

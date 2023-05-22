@@ -1,6 +1,4 @@
 const SecretsManager = require("aws-sdk/clients/secretsmanager");
-const S3 = require("aws-sdk/clients/s3");
-
 class Aws {
     static async getSecrets(secretName) {
         const clientparams = { region: process.env.AWSREGION || "eu-west-2" };
@@ -43,24 +41,6 @@ class Aws {
                 }
             }
         });
-    }
-
-    static async getUploadUrl(bucketName, fileName, contentType) {
-        const s3 = new S3({
-            secretAccessKey: process.env.AWS_SECRETKEY,
-            accessKeyId: process.env.AWS_SECRETID,
-            region: process.env.AWSREGION || "eu-west-2",
-        });
-        const s3Params = {
-            Bucket: bucketName,
-            Fields: {
-                key: fileName,
-                ContentType: contentType,
-            },
-            Expires: 60,
-        };
-        const getUploadUrl = await s3.createPresignedPost(s3Params);
-        return getUploadUrl;
     }
 }
 
