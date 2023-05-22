@@ -19,29 +19,34 @@ class CVICohortModel extends BaseModel {
         // Initialise query
         let query = `SELECT * FROM ${this.tableName}`;
         // Filter by cohort name
-        if (params.name || params.username || params.teamcode) {
-            query += ` WHERE global = true `;
-        }
         const values = [];
         let counter = 1;
         const replacementPrefix = "$";
         let replacementNumber = "";
         Object.keys(params).forEach((param, index) => {
-            if (params[param].includes(",")) {
-                const replacements = params[param].split(",").map(value => {
-                    values.push(value);
+            if (param !== "app") {
+                if (params[param].includes(",")) {
+                    const replacements = params[param].split(",").map(value => {
+                        values.push(value);
+                        replacementNumber = replacementPrefix + counter;
+                        counter++;
+                        return replacementNumber;
+                    }).join(",");
+                    query += ` ${index ? "OR" : "WHERE ("} ${param} IN (${replacements}) `;
+                } else {
+                    values.push(params[param]);
                     replacementNumber = replacementPrefix + counter;
                     counter++;
-                    return replacementNumber;
-                }).join(",");
-                query += ` OR ${param} IN (${replacements}) `;
-            } else {
-                values.push(params[param]);
-                replacementNumber = replacementPrefix + counter;
-                counter++;
-                query += ` OR ${param} = ${replacementNumber}`;
+                    query += ` ${index ? "OR" : "WHERE ("} ${param} = ${replacementNumber}`;
+                }
             }
         });
+        query += `)`;
+        if (params["app"]) {
+            replacementNumber = replacementPrefix + counter;
+            query += ` AND app = ${replacementNumber}`;
+            values.push(params["app"]);
+        }
         const objQuery = {
             text: query,
             values,
