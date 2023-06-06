@@ -1,17 +1,24 @@
 const BaseModel = require("./base/postgres");
+const PermissionsHelper = require("../helpers/permissions");
 class PBICategory extends BaseModel {
     tableName = "pbi_categories";
 
-    getByFilters(filters = {}, callback) {
+    get(callback) {
+        // Select all
+        this.query(`SELECT * FROM ${this.tableName}`, callback);
+    }
+
+    getByFilters(filters = {}, user, callback) {
         // Create conditions
         const whereQuery = { conditions: [], values: [] };
 
         // Filter by name?
         if (filters.name) {
+            const rbacQuery = PermissionsHelper.pbiCapabilitiesAsWhereQuery("pbi_data", "capability", user);
             whereQuery.conditions.push(`category_name ILIKE $1 OR category_id IN (
-                SELECT category_id FROM pbi_metrics WHERE metric_name ILIKE $1
+                SELECT category_id FROM pbi_metrics WHERE metric_name ILIKE $1 AND ${rbacQuery.text}
             )`);
-            whereQuery.values = whereQuery.values.concat(["%" + filters.name + "%"]);
+            whereQuery.values = whereQuery.values.concat(rbacQuery.values, ["%" + filters.name + "%"]);
         }
 
         // Create query

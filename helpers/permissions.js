@@ -1,4 +1,28 @@
 class PermissionsHelper {
+    static pbiCapabilitiesAsWhereQuery(prefix, fieldName, user, startingIndex) {
+        // Get capabilities by prefix
+        const tableCapabilities = user.capabilities.reduce((capabilities, capability) => {
+            const key = Object.keys(capability)[0];
+            if (key.startsWith(prefix)) {
+                capabilities.push(key);
+            }
+            return capabilities;
+        }, []);
+
+        // Create query
+        return {
+            text: `(${fieldName} IS NULL` + (
+                tableCapabilities.length > 0
+                    ? ` OR ${fieldName} IN  (
+                    ${tableCapabilities.map((v, i) => "$" + (i + (startingIndex || 1)))}
+                )`
+                    : ""
+            ) + ")",
+            values: tableCapabilities
+        };
+    }
+
+    // TO-DO: Ammend functionality similar to above
     static capabilitiesAsSqlQuery(capabilities, capabilityName, table = null, alone = true) {
         let whereclause = "";
 

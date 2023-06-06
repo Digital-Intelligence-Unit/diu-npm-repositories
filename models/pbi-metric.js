@@ -1,3 +1,4 @@
+const PermissionsHelper = require("../helpers/permissions");
 const BaseModel = require("./base/postgres");
 class PBIMetric extends BaseModel {
     tableName = "pbi_metrics";
@@ -21,10 +22,26 @@ class PBIMetric extends BaseModel {
         }
     }
 
-    getByFilters(filters = {}, callback) {
+    get(user, callback) {
+        // Select all
+        const rbacQuery = PermissionsHelper.pbiCapabilitiesAsWhereQuery("pbi_data", "capability", user);
+        this.query({
+            text: `SELECT * FROM ${this.tableName} WHERE ${rbacQuery.text}`,
+            values: rbacQuery.values
+        }, callback);
+    }
+
+    getByFilters(filters = {}, user, callback) {
         // Create conditions
         filters.page_limit = filters.page_limit || 25;
-        const whereQuery = { conditions: [], values: [filters.page_limit, (filters.page - 1 || 0) * filters.page_limit] };
+        const rbacQuery = PermissionsHelper.pbiCapabilitiesAsWhereQuery("pbi_data", "capability", user, 3);
+        const whereQuery = {
+            conditions: [rbacQuery.text],
+            values: [
+                filters.page_limit,
+                (filters.page - 1 || 0) * filters.page_limit
+            ].concat(rbacQuery.values)
+        };
 
         // Filter by name?
         if (filters.name) {
@@ -46,6 +63,12 @@ class PBIMetric extends BaseModel {
         }
 
         // Filter query
+        console.log({
+            text: `SELECT * FROM ${this.tableName}` + (
+                whereQuery.conditions.length > 0 ? " WHERE " + whereQuery.conditions.join(" AND ") : ""
+            ) + ` ORDER BY length(metric_name), metric_name LIMIT $1 OFFSET $2`,
+            values: whereQuery.values,
+        });
         this.query(
             {
                 text: `SELECT * FROM ${this.tableName}` + (
