@@ -79,48 +79,6 @@ class BasePostgresModel {
         });
     }
 
-    _addParams(query, params) {
-        // Add count
-        if (params.count) {
-            const arrQuery = query.split("FROM");
-            query = "SELECT count(*) FROM " + arrQuery[1];
-            return query;
-        }
-
-        // Add group by
-        if (params.groupBy) {
-            query += " GROUP BY " + params.groupBy;
-        }
-
-        // Add order by
-        if (params.orderBy) {
-            query += " ORDER BY " + params.orderBy;
-        }
-        if (params.orderBy && params.orderByDirection) {
-            switch (params.orderByDirection.toUpperCase()) {
-                case "ASC":
-                case "DESC":
-                    query += " " + params.orderByDirection.toUpperCase();
-                    break;
-                default:
-                    // do nothing
-                    break;
-            }
-        }
-
-        // Add offset
-        if (params.offset) {
-            query += " OFFSET " + params.offset;
-        }
-
-        // Add limit
-        if (params.limit) {
-            query += " LIMIT " + params.limit;
-        }
-
-        return query;
-    }
-
     create(attributes, callback) {
         // Is array?
         if (!(attributes instanceof Array)) {
@@ -203,6 +161,48 @@ class BasePostgresModel {
     }
 
     delete(keys, callback) {}
+
+    _addParams(query, params) {
+        // Add count
+        if (params.count) {
+            const arrQuery = query.split("FROM");
+            query = "SELECT count(*) FROM " + arrQuery[1];
+            return query;
+        }
+
+        // Add group by
+        if (params.groupBy) {
+            query += " GROUP BY " + params.groupBy;
+        }
+
+        // Add order by
+        if (params.orderBy) {
+            query += " ORDER BY " + params.orderBy;
+        }
+        if (params.orderBy && params.orderByDirection) {
+            switch (params.orderByDirection.toUpperCase()) {
+                case "ASC":
+                case "DESC":
+                    query += " " + params.orderByDirection.toUpperCase();
+                    break;
+                default:
+                    // do nothing
+                    break;
+            }
+        }
+
+        // Add offset
+        if (params.offset) {
+            query += " OFFSET " + params.offset;
+        }
+
+        // Add limit
+        if (params.limit) {
+            query += " LIMIT " + params.limit;
+        }
+
+        return query;
+    }
 }
 
 module.exports = BasePostgresModel;
