@@ -14,11 +14,15 @@ class PBICategory extends BaseModel {
 
         // Filter by name?
         if (filters.name) {
+            // Get RBAC query
             const rbacQuery = PermissionsHelper.pbiCapabilitiesAsWhereQuery("pbi_data", "capability", user);
-            whereQuery.conditions.push(`category_name ILIKE $1 OR category_id IN (
-                SELECT category_id FROM pbi_metrics WHERE metric_name ILIKE $1 AND ${rbacQuery.text}
+            whereQuery.values = whereQuery.values.concat(rbacQuery.values);
+
+            // Add filter
+            whereQuery.conditions.push(`category_name ILIKE $${(whereQuery.values.length + 1)} OR category_id IN (
+                SELECT category_id FROM pbi_metrics WHERE metric_name ILIKE $${(whereQuery.values.length + 1)} AND ${rbacQuery.text}
             )`);
-            whereQuery.values = whereQuery.values.concat(rbacQuery.values, ["%" + filters.name + "%"]);
+            whereQuery.values.push("%" + filters.name + "%");
         }
 
         // Create query

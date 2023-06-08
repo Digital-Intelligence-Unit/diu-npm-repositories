@@ -63,12 +63,6 @@ class PBIMetric extends BaseModel {
         }
 
         // Filter query
-        console.log({
-            text: `SELECT * FROM ${this.tableName}` + (
-                whereQuery.conditions.length > 0 ? " WHERE " + whereQuery.conditions.join(" AND ") : ""
-            ) + ` ORDER BY length(metric_name), metric_name LIMIT $1 OFFSET $2`,
-            values: whereQuery.values,
-        });
         this.query(
             {
                 text: `SELECT * FROM ${this.tableName}` + (
