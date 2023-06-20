@@ -103,12 +103,13 @@ class PBIView extends BaseModel {
         };
 
         // Filter by team?
-        if (params.teamcodes) {
+        if (params.teamcodes && params.teamcodes.length > 0) {
             query.text += ` OR teamcode IN (${params.teamcodes.map((v, i) => "$" + (i + 2))})`;
             query.values = query.values.concat(params.teamcodes);
         }
 
         // Run query
+        console.log(query);
         this.query(query, callback);
     }
 }
