@@ -12,7 +12,7 @@ class MsTeams {
                 body: [
                     {
                         type: "Image",
-                        url: "https://www.nexusintelligencenw.nhs.uk/assets/images/nexusgenNHS.png",
+                        url: "https://www.lancashireandsouthcumbriasis.nhs.uk/assets/images/lscsis-logo.png",
                         horizontalAlignment: "Center",
                         width: "200px"
                     },
@@ -52,7 +52,7 @@ class MsTeams {
                 title: "View",
                 url: (
                     (process.env.AWSPROFILE || "Dev") === "Dev" ? "dev." : "www."
-                ) + (process.env.SITE_URL || "nexusintelligencenw.nhs.uk")
+                ) + (process.env.SITE_URL || "lancashireandsouthcumbriasis.nhs.uk")
             }
         },
         callback
