@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-const site = process.env.SITE_URL || "dev.nexusintelligencenw.nhs.uk";
+const site = process.env.SITE_URL || "dev.lancashireandsouthcumbriasis.nhs.uk";
 
 module.exports = {
     message_actions: {
@@ -16,7 +16,7 @@ module.exports = {
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-            <title>Nexus Intelligence</title>
+            <title>LSCSIS</title>
             <style>
                 /* -------------------------------------
                     MAIN TEMPLATE
@@ -170,7 +170,7 @@ module.exports = {
                                         <tr>
                                             <td>
                                                 <div class="logo">
-                                                    <img style="width: 280px" width="280" src="https://www.nexusintelligencenw.nhs.uk/assets/images/nexusgenNHS.png">
+                                                    <img style="width: 280px" width="280" src="https://www.lancashireandsouthcumbriasis.nhs.uk/assets/images/lscsis-logo.png">
                                                 </div>
 
                                                 <div class="message">MESSAGE</div>
