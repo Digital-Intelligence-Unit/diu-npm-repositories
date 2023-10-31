@@ -62,6 +62,14 @@ class PBIMetric extends BaseModel {
             whereQuery.values = whereQuery.values.concat([filters.category]);
         }
 
+        // Filter by geo_type?
+        console.log(filters);
+        if (filters.geo_type) {
+            console.log(filters.geo_type);
+            whereQuery.conditions.push(`metric_geo_type = $${(whereQuery.values.length + 1)}`);
+            whereQuery.values.push(filters.geo_type);
+        }
+
         // Filter query
         this.query(
             {
