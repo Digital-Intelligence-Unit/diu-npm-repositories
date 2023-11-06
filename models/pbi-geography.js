@@ -30,7 +30,9 @@ class PBIGeography extends BaseModel {
         this.query(
             {
                 text: `
-                    SELECT geo_id, geo_name, geo_level, geo_year, ST_AsGeoJson(geom) as geom 
+                    SELECT 
+                        geo_id, geo_name, geo_level, 
+                        geo_year, ST_AsGeoJson(${filters.boundaries ? "ST_Boundary(geom)" : "geom"}) as geom 
                     FROM ${this.tableName} ${whereQuerySql} 
                     LIMIT $1`,
                 values: whereQuery.values,
