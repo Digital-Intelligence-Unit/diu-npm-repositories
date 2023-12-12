@@ -8,6 +8,7 @@ const Methods = {
 // Models
 const Models = {
     BaseDDBModel: require("./models/base/dynamo-db"),
+    BasePostgresModel: require("./models/base/postgres"),
 
     UserModel: require("./models/user"),
     UserProfileModel: require("./models/user-profile"),
@@ -48,7 +49,9 @@ const Models = {
     PBIMetricLevel: require("./models/pbi-metric-level"),
     PBIView: require("./models/pbi-view"),
     PBIMetricDashboard: require("./models/pbi-metric-dashboards"),
-    PBIGeography: require("./models/pbi-geography")
+    PBIGeography: require("./models/pbi-geography"),
+    PBIUploader: require("./models/pbi-uploader"),
+    Job: require("./models/job")
 };
 
 // Helpers
