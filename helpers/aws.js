@@ -1,13 +1,26 @@
+const { fromIni } = require("@aws-sdk/credential-providers");
 const SecretsManager = require("aws-sdk/clients/secretsmanager");
 class Aws {
-    static async getSecrets(secretName) {
-        const clientparams = { region: process.env.AWSREGION || "eu-west-2" };
-        if (process.env.AWS_SECRETID && process.env.AWS_SECRETID) {
-            clientparams["accessKeyId"] = process.env.AWS_SECRETID;
-            clientparams["secretAccessKey"] = process.env.AWS_SECRETKEY;
+    static async getCredentials() {
+        // Get correct credentials
+        const credentials = { region: process.env.AWSREGION || "eu-west-2" };
+        if (process.env.AWS_SECRETID) {
+            credentials["accessKeyId"] = process.env.AWS_SECRETID;
+            credentials["secretAccessKey"] = process.env.AWS_SECRETKEY;
+        } else {
+            credentials["credentials"] = await fromIni({
+                profile: "default"
+            })();
         }
-        const client = new SecretsManager(clientparams);
 
+        return credentials;
+    }
+
+    static async getSecrets(secretName) {
+        // Create client
+        const client = new SecretsManager(await this.getCredentials());
+
+        // Get secret
         return new Promise((resolve, reject) => {
             client.getSecretValue({ SecretId: secretName }, (err, data) => {
                 if (err) {
