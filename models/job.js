@@ -8,7 +8,7 @@ class Job extends BaseModel {
     create(attributes, callback) {
         // Add missing values
         const job = Object.assign({}, {
-            id: ulid(),
+            id: ulid(Luxon.DateTime.now().toMillis()),
             timestamp: Luxon.DateTime.now().toISO(),
             "owner#type": attributes.owner + "#pbi_data_upload",
         }, attributes);
@@ -29,8 +29,8 @@ class Job extends BaseModel {
                 ExpressionAttributeValues: {
                     ":ownerType": filters.owner + "#" + filters.type,
                 },
-                ScanIndexForward: false,
-                Limit: 30
+                Limit: 30,
+                ScanIndexForward: false
             },
             (err, data) => {
                 // Error occurred
