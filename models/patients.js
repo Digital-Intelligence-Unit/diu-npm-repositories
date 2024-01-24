@@ -7,7 +7,8 @@ class PatientsModel extends BaseModel {
     selectjoin = `SELECT M.sex,M.age,M.risk_score_int,M.asthma,M.copd,M.chd,M.heart_failure,
     M.hypertension,M.atrial_fibrillation,M.pad,M.cancer,M.depression,M.dementia,M.mental_health,M.learning_disabilities,M.diabetes,
     M.hypothyroid,M.ckd,M.epilepsy,M.osteoporosis,M.rheumatoid_arthritis,M.execution_date, M.testdigest, M.wellbeing_acorn_type,
-    M.household_group,M.household_type,M.mosaic_label,M.gpp_code,M.frailty_text,M.deprivation_decile FROM population_master as M`;
+    M.household_group,M.household_type,M.mosaic_label,M.gpp_code,M.frailty_text,M.deprivation_decile, M.bmi, M.bloodpressuresystolic, 
+    M.bloodpressurediastolic, M.bloodpressurereadingtype FROM population_master as M`;
 
     getAll(limit, roles, callback) {
         const rolecheck = PermissionsHelper.capabilitiesAsSqlQuery(roles, "populationjoined", "M", true);
