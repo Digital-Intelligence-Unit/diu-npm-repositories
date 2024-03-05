@@ -35,7 +35,12 @@ class PBIMetricData extends BaseModel {
         });
     }
 
-    getByMetricLevelId(id, filters = {}, callback) {
+    createMetricLevelIdQuery(id, filters, columns = [
+        "pbi_metrics_level_data.*",
+        "pbi_geographies.geo_name",
+        "pbi_geographies.geo_year",
+        "ST_AsGeoJSON(ST_Simplify(pbi_geographies.geom, 0.000075, TRUE)) as geojson"
+    ]) {
         // Select all
         const query = {
             text: `
@@ -45,8 +50,7 @@ class PBIMetricData extends BaseModel {
                 LEFT JOIN pbi_metrics_data ON pbi_metrics_level.metric_level_id = pbi_metrics_data.metric_level_id
                 WHERE pbi_metrics_level.metric_level_id = $1
             )
-            SELECT pbi_metrics_level_data.*, pbi_geographies.geo_name, 
-            pbi_geographies.geo_year, ST_AsGeoJSON(ST_Simplify(pbi_geographies.geom, 0.000075, TRUE)) as geojson
+            SELECT ${columns.join(", ")}
             FROM pbi_metrics_level_data
             LEFT JOIN pbi_geographies ON pbi_geographies.geo_id = pbi_metrics_level_data.geo_id
             WHERE pbi_geographies.geom IS NOT NULL AND pbi_geographies.geo_year IS NOT DISTINCT FROM pbi_metrics_level_data.geog_year`,
@@ -56,12 +60,38 @@ class PBIMetricData extends BaseModel {
         // Dynamic filter?
         if (filters.value_operator && filters.value) {
             // Note: Make sure to validate operator first
-            query.text += ` AND (
-                metric_data_value_float ${filters.value_operator} $${query.values.length + 1} OR 
-                metric_data_value_float ${filters.value_operator} $${query.values.length + 1}
-            )`;
-            query.values.push(filters.value);
+            if (filters.value_operator === "BETWEEN") {
+                query.text += ` AND (metric_data_value_float BETWEEN $${query.values.length + 1} AND $${query.values.length + 2})`;
+            } else {
+                query.text += ` AND (metric_data_value_char IN ($${query.values.length + 1})`;
+            }
+            query.values = query.values.concat(filters.value.split(","));
         }
+
+        return query;
+    }
+
+    getByMetricLevelId(id, filters = {}, callback) {
+        // Make query and return
+        this.query(
+            this.createMetricLevelIdQuery(id, filters),
+            (err, result) => {
+                callback(err, result);
+            }
+        );
+    }
+
+    getAddressesByMetricLevelId(id, filters = {}, callback) {
+        // Get query
+        const query = this.createMetricLevelIdQuery(id, filters, [
+            "ST_Union(pbi_geographies.geom)"
+        ]);
+
+        // Get addresses
+        query.text = `
+        SELECT pbi_geographies.geo_id as uprn, pbi_geographies.geo_name as address
+        FROM pbi_geographies 
+        WHERE ST_WITHIN(geom, (${query.text})) AND geo_level = 'Property'`;
 
         // Make query and return
         this.query(query, (err, result) => {
