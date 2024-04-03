@@ -1,5 +1,7 @@
 const { fromIni } = require("@aws-sdk/credential-providers");
 const SecretsManager = require("aws-sdk/clients/secretsmanager");
+const AWSS3 = require("aws-sdk/clients/s3");
+
 class Aws {
     static async getCredentials() {
         // Get correct credentials
@@ -14,6 +16,18 @@ class Aws {
         }
 
         return credentials;
+    }
+
+    static async getEnvironmentConfig(env, application, name) {
+        // Get variables from s3
+        const s3 = new AWSS3(await this.getCredentials());
+        const response = await s3.getObject({
+            Bucket: "lscics-sis-infra-assets-ew2-" + env,
+            Key: `${application}/${name}.config.json`
+        }).promise();
+
+        // Return environment
+        return JSON.parse(response.Body.toString("utf-8"));
     }
 
     static async getSecrets(secretName) {
