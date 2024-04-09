@@ -53,7 +53,7 @@ class PBIMetricData extends BaseModel {
             SELECT ${columns.join(", ")}
             FROM pbi_metrics_level_data
             LEFT JOIN pbi_geographies ON pbi_geographies.geo_id = pbi_metrics_level_data.geo_id
-            WHERE pbi_geographies.geom IS NOT NULL AND pbi_geographies.geo_year IS NOT DISTINCT FROM pbi_metrics_level_data.geog_year`,
+            WHERE pbi_geographies.geo_year IS NOT DISTINCT FROM pbi_metrics_level_data.geog_year`,
             values: [id],
         };
 
