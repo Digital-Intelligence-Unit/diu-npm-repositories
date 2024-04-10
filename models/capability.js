@@ -2,6 +2,13 @@ const BaseModel = require("./base/postgres");
 class CapabilityModel extends BaseModel {
     tableName = "capabilities";
 
+    getByName(name, callback) {
+        this.query({
+            text: `SELECT * FROM ${this.tableName} WHERE name = $1`,
+            values: [name]
+        }, callback);
+    }
+
     getByTag(tagName, callback) {
         const query = `SELECT * FROM ${this.tableName} WHERE $1 = ANY(tags)`;
         this.query({ text: query, values: [tagName] }, callback);
