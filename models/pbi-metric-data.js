@@ -10,7 +10,7 @@ class PBIMetricData extends BaseModel {
                 FROM (
                     SELECT ntile(4) OVER (ORDER BY metric_data_value_float) AS quartile, metric_data_value_float 
                     FROM pbi_metrics_data 
-                    WHERE metric_level_id = $1
+                    WHERE metric_level_id = $1 AND metric_data_value_float IS NOT NULL
                 ) AS x --WHERE x.quartile <= 3
                 GROUP BY x.quartile 
                 ORDER BY x.quartile
@@ -23,7 +23,7 @@ class PBIMetricData extends BaseModel {
                 FROM (
                     SELECT ntile(4) OVER (ORDER BY metric_data_value_float) AS quartile, metric_data_value_float 
                     FROM pbi_metrics_data 
-                    WHERE metric_level_id = $1
+                    WHERE metric_level_id = $1 AND metric_data_value_float IS NOT NULL
                 ) AS x 
                 WHERE x.quartile = 4 
                 GROUP BY x.quartile 
@@ -62,6 +62,8 @@ class PBIMetricData extends BaseModel {
             // Note: Make sure to validate operator first
             if (filters.value_operator === "BETWEEN") {
                 query.text += ` AND (metric_data_value_float BETWEEN $${query.values.length + 1} AND $${query.values.length + 2})`;
+            } else if (filters.value_operator === "LIKE") {
+                query.text += ` AND (metric_data_value_char ILIKE $${query.values.length + 1}`;
             } else {
                 query.text += ` AND (metric_data_value_char IN ($${query.values.length + 1})`;
             }
