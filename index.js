@@ -38,6 +38,7 @@ const Models = {
     AtomicPayloadsModel: require("./models/atomic-payloads"),
     SpiIncidentMethods: require("./models/spi_incident_methods"),
     RealTimeSurveillance: require("./models/real-time-surveillance"),
+    MLCSUUsersModel: require("./models/mlcsu-users"),
 
     ActiveDirectoryModel: require("./models/active-directory"),
     ConfluenceModel: require("./models/confluence"),
