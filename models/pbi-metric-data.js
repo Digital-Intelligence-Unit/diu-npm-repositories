@@ -41,6 +41,11 @@ class PBIMetricData extends BaseModel {
         "pbi_geographies.geo_year",
         "ST_AsGeoJSON(ST_Simplify(pbi_geographies.geom, 0.000075, TRUE)) as geojson"
     ]) {
+        // Use different geom?
+        if (filters.level && filters.level.includes("Custom")) {
+            columns[3] = "ST_AsGeoJSON(pbi_metrics_level_data.metric_data_geom) as geojson";
+        }
+
         // Select all
         const query = {
             text: `
@@ -89,7 +94,7 @@ class PBIMetricData extends BaseModel {
             "ST_Union(pbi_geographies.geom)"
         ]);
 
-        // Get addresses
+        // Get addresses (Note: Should only be performed on polygon levels)
         query.text = `
         SELECT pbi_geographies.geo_id as uprn, pbi_geographies.geo_name as address
         FROM pbi_geographies 
