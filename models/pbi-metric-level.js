@@ -14,6 +14,26 @@ class PBIMetricLevel extends BaseModel {
             }
         );
     }
+
+    getByMetricIds(ids, callback) {
+        // Select all
+        ids = ids.split(",");
+        this.query(
+            {
+                text: `
+                    SELECT STRING_AGG(metric_level_id, ',') as metric_level_id, metric_level, metric_period, geog_year
+                    FROM pbi_metrics_level
+                    WHERE metric_id IN (${ids.map((v, i) => "$" + (i + 1))})
+                    GROUP BY metric_level, metric_period, geog_year
+                    HAVING count(metric_level_id) = $${ids.length + 1}
+                `,
+                values: ids.concat([ids.length]),
+            },
+            (err, result) => {
+                callback(err, result);
+            }
+        );
+    }
 }
 
 module.exports = PBIMetricLevel;
