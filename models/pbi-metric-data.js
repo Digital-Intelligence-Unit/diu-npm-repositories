@@ -32,7 +32,6 @@ class PBIMetricData extends BaseModel {
             ) k`,
             values: [id]
         }, (err, result) => {
-            console.log(result);
             callback(err, result);
         });
     }
