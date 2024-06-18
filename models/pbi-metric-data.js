@@ -60,7 +60,7 @@ class PBIMetricData extends BaseModel {
             text:
                 `WITH 
                 pbi_metrics_level_data AS (
-                    SELECT *,
+                    SELECT *, pbi_metrics_level.metric_level_id AS metric_level_ids,
                     CASE
                         ${
     Object.keys(filters.weights || {}).map((metricId, index) => {
@@ -80,7 +80,10 @@ class PBIMetricData extends BaseModel {
                     SELECT 
                     pbi_metrics_level_data.geo_id,
                     pbi_metrics_level_data.geog_year,
-                    (SUM(pbi_metrics_level_data.metric_data_value_float_idx * pbi_metrics_level_data.weight) / $${values.length}) as metric_data_value_float
+                    (SUM(pbi_metrics_level_data.metric_data_value_float_idx * pbi_metrics_level_data.weight) / $${values.length}) as metric_data_value_float,
+                    ARRAY_AGG(pbi_metrics_level_data.metric_data_value_float ORDER BY metric_data_value_float DESC) as metric_data_value_floats,
+                    ARRAY_AGG(pbi_metrics_level_data.metric_level_ids ORDER BY metric_data_value_float DESC) as metric_level_ids,
+                    ARRAY_AGG(pbi_metrics_level_data.metric_id ORDER BY metric_data_value_float DESC) as metric_ids
                     FROM pbi_metrics_level_data
                     GROUP BY pbi_metrics_level_data.geo_id, pbi_metrics_level_data.geog_year
                 )
@@ -88,6 +91,9 @@ class PBIMetricData extends BaseModel {
                 SELECT 
                 pbi_metrics_level_data_weighted.geo_id, 
                 pbi_metrics_level_data_weighted.metric_data_value_float, 
+                pbi_metrics_level_data_weighted.metric_data_value_floats, 
+                pbi_metrics_level_data_weighted.metric_level_ids, 
+                pbi_metrics_level_data_weighted.metric_ids, 
                 pbi_geographies.geo_name, 
                 pbi_geographies.geo_year,
                 ST_AsGeoJSON(ST_Simplify(pbi_geographies.geom, 0.000075, TRUE)) as geojson
