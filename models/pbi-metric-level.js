@@ -15,19 +15,35 @@ class PBIMetricLevel extends BaseModel {
         );
     }
 
-    getByMetricIds(ids, callback) {
+    getByMetricIds(ids, filters, callback) {
+        // Set grouping
+        const groupingMethod = filters.grouping_method || 'metric_period';
+        
         // Select all
         ids = ids.split(",");
         this.query(
             {
-                text: `
-                    SELECT STRING_AGG(metric_level_id, ',') as metric_level_id, metric_level, metric_period, geog_year
-                    FROM pbi_metrics_level
-                    WHERE metric_id IN (${ids.map((v, i) => "$" + (i + 1))})
-                    GROUP BY metric_level, metric_period, geog_year
-                    HAVING count(metric_level_id) = $${ids.length + 1}
-                `,
-                values: ids.concat([ids.length]),
+                text: {
+                    metric_period: `
+                        SELECT STRING_AGG(metric_level_id, ',') as metric_level_id, metric_level, metric_period, geog_year
+                        FROM pbi_metrics_level
+                        WHERE metric_id IN (${ids.map((v, i) => "$" + (i + 1))})
+                        GROUP BY metric_level, geog_year, metric_period
+                        HAVING count(metric_level_id) = $${ids.length + 1}
+                    `,
+                    metric_id: `
+                        SELECT 
+                            metric_level_id, metric_period, metric_id, metric_level, geog_year
+                        FROM pbi_metrics_level
+                        WHERE metric_id IN (${ids.map((v, i) => "$" + (i + 1))}) AND metric_level IN (
+                            SELECT metric_level FROM pbi_metrics_level
+                            WHERE metric_id IN (${ids.map((v, i) => "$" + (i + 1))})
+                            GROUP BY metric_level, geog_year
+                            HAVING count(DISTINCT metric_id) = $${ids.length + 1}
+                        )
+                    `
+                }[groupingMethod],
+                values: ids.concat([ids.length])
             },
             (err, result) => {
                 callback(err, result);
