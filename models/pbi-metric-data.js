@@ -53,7 +53,8 @@ class PBIMetricData extends BaseModel {
         const values = (filters.weights ? Object.values(filters.weights) : []).concat(ids, [
             ids.reduce((total, id) => {
                 return total + (parseFloat(filters.weights[id]) || 1);
-            }, 0)
+            }, 0),
+            ids.length
         ]);
 
         // Create query
@@ -61,7 +62,8 @@ class PBIMetricData extends BaseModel {
             text:
                 `WITH 
                 pbi_metrics_level_data AS (
-                    SELECT *, pbi_metrics_level.metric_level_id AS metric_level_ids,
+                    SELECT *, 
+                    pbi_metrics_level.metric_level_id AS metric_level_ids,
                     CASE
                         ${
     Object.keys(filters.weights || {}).map((metricId, index) => {
@@ -74,19 +76,21 @@ class PBIMetricData extends BaseModel {
                     END AS weight
                     FROM pbi_metrics_level
                     LEFT JOIN pbi_metrics_data ON pbi_metrics_level.metric_level_id = pbi_metrics_data.metric_level_id
-                    WHERE pbi_metrics_level.metric_level_id IN (${ids.map((v, i) => "$" + (Object.values(filters.weights).length + i + 1))})
+                    WHERE pbi_metrics_level.metric_level_id IN (${ids.map((v, i) => "$" + (Object.values(filters.weights).length + i + 1))}) 
+                    -- AND metric_data_value_float_idx IS NOT NULL
                 ),
                 
                 pbi_metrics_level_data_weighted AS (
                     SELECT 
                     pbi_metrics_level_data.geo_id,
                     pbi_metrics_level_data.geog_year,
-                    (SUM(pbi_metrics_level_data.metric_data_value_float_idx * pbi_metrics_level_data.weight) / $${values.length}) as metric_data_value_float,
+                    (SUM(pbi_metrics_level_data.metric_data_value_float_idx * pbi_metrics_level_data.weight) / $${values.length - 1}) as metric_data_value_float,
                     ARRAY_AGG(pbi_metrics_level_data.metric_data_value_float ORDER BY metric_data_value_float DESC) as metric_data_value_floats,
                     ARRAY_AGG(pbi_metrics_level_data.metric_level_ids ORDER BY metric_data_value_float DESC) as metric_level_ids,
                     ARRAY_AGG(pbi_metrics_level_data.metric_id ORDER BY metric_data_value_float DESC) as metric_ids
                     FROM pbi_metrics_level_data
                     GROUP BY pbi_metrics_level_data.geo_id, pbi_metrics_level_data.geog_year
+                    HAVING count(pbi_metrics_level_data.geo_id) = $${values.length} -- For limited area data
                 )
 
                 SELECT 
