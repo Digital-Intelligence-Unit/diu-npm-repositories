@@ -39,6 +39,7 @@ const Models = {
     SpiIncidentMethods: require("./models/spi_incident_methods"),
     RealTimeSurveillance: require("./models/real-time-surveillance"),
     MLCSUUsersModel: require("./models/mlcsu-users"),
+    TrustsAndSitesModel: require("./models/trusts-and-sites"),
 
     ActiveDirectoryModel: require("./models/active-directory"),
     ConfluenceModel: require("./models/confluence"),
