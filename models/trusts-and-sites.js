@@ -23,23 +23,25 @@ class TrustsAndSitesModel extends BaseModel {
         let counter = 1;
         const replacementPrefix = "$";
         let replacementNumber = "";
-        Object.keys(params).forEach((param, index) => {
-            if (params[param].includes(",")) {
-                const replacements = params[param].split(",").map(value => {
-                    values.push(value);
+        if (Object.keys(params).length > 0) {
+            Object.keys(params).forEach((param, index) => {
+                if (params[param].includes(",")) {
+                    const replacements = params[param].split(",").map(value => {
+                        values.push(value);
+                        replacementNumber = replacementPrefix + counter;
+                        counter++;
+                        return replacementNumber;
+                    }).join(",");
+                    query += ` ${index ? "OR" : `WHERE ("`}${param}" IN (${replacements}) `;
+                } else {
+                    values.push(params[param]);
                     replacementNumber = replacementPrefix + counter;
                     counter++;
-                    return replacementNumber;
-                }).join(",");
-                query += ` ${index ? "OR" : "WHERE ("} ${param} IN (${replacements}) `;
-            } else {
-                values.push(params[param]);
-                replacementNumber = replacementPrefix + counter;
-                counter++;
-                query += ` ${index ? "OR" : "WHERE ("} ${param} = ${replacementNumber}`;
-            }
-        });
-        query += `)`;
+                    query += ` ${index ? "OR" : `WHERE ("`} ${param} " = ${replacementNumber}`;
+                }
+            });
+            query += `)`;
+        }
         const objQuery = {
             text: query,
             values,
