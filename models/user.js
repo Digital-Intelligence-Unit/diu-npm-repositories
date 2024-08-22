@@ -133,16 +133,20 @@ class UserModel extends BaseModel {
         this.documentClient.query(params, callback);
     }
 
-    getUserByPartialUsername(username, callback) {
+    getUserByPartialUsername(username, organisation, callback) {
         const params = {
             TableName: this.tableName,
-            IndexName: "username-index",
-            KeyConditionExpression: "#username = :username",
+            IndexName: "organisation-name-index",
+            KeyConditionExpression: "#organisation = :organisation",
+            FilterExpression: "contains(#username, :username) or contains(#email, :username)",
             ExpressionAttributeNames: {
                 "#username": "username",
+                "#organisation": "organisation",
+                "#email": "email",
             },
             ExpressionAttributeValues: {
                 ":username": username,
+                ":organisation": organisation,
             },
         };
         this.documentClient.query(params, callback);
