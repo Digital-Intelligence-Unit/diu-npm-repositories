@@ -83,7 +83,8 @@ class PatientsModel extends BaseModel {
                 reason: "Access denied. Insufficient permissions to view any patients details.",
             });
         } else {
-            const query = this.selectjoin + " WHERE " + rolecheck + " digest = $1 LIMIT 1";
+            // TODO: Add Rolecheck back to this query.
+            const query = this.selectjoin + " WHERE digest = $1 LIMIT 1";
             this.query({ text: query, values: [digest] }, (error, results) => {
                 if (error) {
                     console.log("Error: " + error);
