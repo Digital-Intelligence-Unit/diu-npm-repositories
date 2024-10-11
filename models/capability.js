@@ -115,6 +115,54 @@ class CapabilityModel extends BaseModel {
             )`;
         this.query({ text, values }, callback);
     }
+
+    getContactsByContactType(type, callback) {
+        const query =
+            `SELECT * FROM contact_types 
+            RIGHT JOIN contact ON contact.contact_type_id = contact_types.contact_type_id
+            WHERE contact_type = $1;`;
+        this.query({ text: query, values: [type] }, callback);
+    }
+    
+    updateContact(data, callback) {
+        const query =
+            `UPDATE public.contact
+            SET 
+            contact_type_id = $1,
+            contact_name = $2,
+            contact_email = $3,
+            identifier = $4
+            WHERE contact_id = $5`;
+        const overwrites = [
+            data.contact_type_id,
+            data.contact_name,
+            data.contact_email,
+            data.identifier,
+            data.contact_id,
+        ];
+        this.query({ text: query, values: overwrites }, callback);
+    }
+    
+    addContact(data, callback) {
+        const query =
+            `INSERT INTO public.contact(contact_type_id, contact_name, contact_email, identifier)
+	        VALUES ($1, $2, $3, $4) RETURNING *;`;
+        const overwrites = [
+            data.contact_type_id,
+            data.contact_name,
+            data.contact_email,
+            data.identifier,
+        ];
+        this.query({ text: query, values: overwrites }, callback);
+    }
+    
+    deleteContact(data, callback) {
+        console.log(data);
+        const query =
+            `DELETE FROM public.contact
+    	    WHERE contact_id = $1`;
+        this.query({ text: query, values: [data] }, callback);
+    }
 }
 
 module.exports = CapabilityModel;
