@@ -1,48 +1,60 @@
 {
     "name": "diu-data-functions",
-    "version": "1.2.92",
+    "version": "2.0.0",
     "description": "NPM Repository for common data and database functions across applications",
-    "main": "index.js",
-    "dependencies": {
-        "@aws-sdk/credential-providers": "^3.450.0",
-        "activedirectory": "^0.7.2",
-        "adaptive-expressions": "^4.16.0",
-        "adaptivecards-templating": "^2.2.0",
-        "aws-sdk": "^2.540.0",
-        "bcryptjs": "~2.4.3",
-        "crypto-js": "^4.1.1",
-        "fastest-validator": "^1.12.0",
-        "jsonwebtoken": "^8.5.1",
-        "juice": "^8.1.0",
-        "lodash": "^4.17.21",
-        "luxon": "^2.4.0",
-        "ms-teams-webhook": "^1.0.4",
-        "nodemailer": "^6.7.3",
-        "pg": "^8.7.3",
-        "request": "^2.88.2",
-        "ulidx": "^2.2.1"
+    "type": "module",
+    "scripts": {
+        "clean": "del-cli build",
+        "build": "tsc"
+    },
+    "peerDependencies": {
+        "@adonisjs/auth": "^9.2.3",
+        "@adonisjs/core": "^6.14.1",
+        "@adonisjs/lucid": "^21.3.0",
+        "@aws-sdk/client-secrets-manager": "^3.682.0",
+        "@aws-sdk/credential-providers": "^3.682.0",
+        "dyngoose": "^4.11.2"
     },
     "devDependencies": {
-        "@types/crypto-js": "^4.1.1",
-        "@types/luxon": "^2.3.2",
-        "eslint": "^8.14.0",
-        "eslint-config-standard": "^17.0.0",
-        "eslint-plugin-import": "^2.26.0",
-        "eslint-plugin-n": "^15.2.0",
-        "eslint-plugin-promise": "^6.0.0"
+        "@adonisjs/assembler": "^7.7.0",
+        "@adonisjs/auth": "^9.2.3",
+        "@adonisjs/core": "^6.14.1",
+        "@adonisjs/eslint-config": "^1.3.0",
+        "@adonisjs/prettier-config": "^1.3.0",
+        "@adonisjs/tsconfig": "^1.3.0",
+        "@japa/assert": "^3.0.0",
+        "@japa/runner": "^3.1.4",
+        "@swc/core": "^1.6.3",
+        "@types/jsonwebtoken": "^9.0.7",
+        "@types/node": "^20.14.5",
+        "bentocache": "^1.0.0-beta.9",
+        "c8": "^10.1.2",
+        "copyfiles": "^2.4.1",
+        "del-cli": "^5.1.0",
+        "eslint": "^8.57.0",
+        "jsonwebtoken": "^9.0.2",
+        "luxon": "^3.5.0",
+        "np": "^10.0.6",
+        "prettier": "^3.3.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.4.5"
     },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "lint": "npx eslint --fix-dry-run --ext .js"
+    "exports": {
+        ".": "./build/index.js",
+        "./helpers": "./build/src/helpers.js",
+        "./models": "./build/src/models.js",
+        "./guards/jwt": "./build/src/guards/jwt",
+        "./cache_provider": "./build/src/providers/cache_provider.js",
+        "./session_dynamo_user_provider": "./build/src/providers/session_dynamo_user_provider.js"
     },
     "keywords": [
         "diu"
     ],
-    "homepage": "https://github.com/morgans3/diu-npm-repositories",
+    "homepage": "https://github.com/Digital-Intelligence-Unit/diu-npm-repositories",
     "bugs": {
-        "url": "https://github.com/morgans3/diu-npm-repositories/issues"
+        "url": "https://github.com/Digital-Intelligence-Unit/diu-npm-repositories/issues"
     },
-    "author": "stewartmorganv2",
+    "author": "Digital-Intelligence-Unit",
     "license": "OGL-3.0",
     "repository": {
         "type": "git",
