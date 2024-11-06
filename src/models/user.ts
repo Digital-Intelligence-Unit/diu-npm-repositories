@@ -10,7 +10,6 @@ import TeamMember from './team_member.js'
 
 // Default adonisjs auth finder cannot be used with dyngoose table
 // Functions and properties marked with $A are for AdonisJS
-
 @Dyngoose.$Table({ name: 'users' })
 export default class User extends Dyngoose.Table {
     @Dyngoose.Attribute.String({ trim: true })

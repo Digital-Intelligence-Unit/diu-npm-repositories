@@ -8,26 +8,27 @@
         "build": "tsc"
     },
     "peerDependencies": {
-        "@adonisjs/auth": "^9.2.3",
-        "@adonisjs/core": "^6.14.1",
-        "@adonisjs/lucid": "^21.3.0",
+        "@adonisjs/auth": "^9.1.1",
+        "@adonisjs/core": "^6.2.2",
+        "@adonisjs/lucid": "^20.1.0",
+        "@adonisjs/bouncer": "^3.1.3",
         "@aws-sdk/client-secrets-manager": "^3.682.0",
-        "@aws-sdk/credential-providers": "^3.682.0",
-        "dyngoose": "^4.11.2"
+        "@aws-sdk/credential-providers": "^3.682.0"
     },
     "devDependencies": {
-        "@adonisjs/assembler": "^7.7.0",
-        "@adonisjs/auth": "^9.2.3",
-        "@adonisjs/core": "^6.14.1",
-        "@adonisjs/eslint-config": "^1.3.0",
-        "@adonisjs/prettier-config": "^1.3.0",
-        "@adonisjs/tsconfig": "^1.3.0",
+        "@adonisjs/assembler": "^7.1.1",
+        "@adonisjs/auth": "^9.1.1",
+        "@adonisjs/bouncer": "^3.1.3",
+        "@adonisjs/core": "^6.2.2",
+        "@adonisjs/eslint-config": "^1.2.1",
+        "@adonisjs/prettier-config": "^1.2.1",
+        "@adonisjs/tsconfig": "^1.2.1",
         "@japa/assert": "^3.0.0",
         "@japa/runner": "^3.1.4",
-        "@swc/core": "^1.6.3",
+        "@swc/core": "1.3.107",
         "@types/jsonwebtoken": "^9.0.7",
+        "@types/luxon": "^3.4.2",
         "@types/node": "^20.14.5",
-        "bentocache": "^1.0.0-beta.9",
         "c8": "^10.1.2",
         "copyfiles": "^2.4.1",
         "del-cli": "^5.1.0",
@@ -37,15 +38,21 @@
         "np": "^10.0.6",
         "prettier": "^3.3.2",
         "ts-node": "^10.9.2",
-        "typescript": "^5.4.5"
+        "typescript": "^5.4.3"
     },
+    "files": [
+        "build/src",
+        "build/index.d.ts",
+        "build/index.js"
+    ],
     "exports": {
         ".": "./build/index.js",
-        "./helpers": "./build/src/helpers.js",
-        "./models": "./build/src/models.js",
-        "./guards/jwt": "./build/src/guards/jwt",
-        "./cache_provider": "./build/src/providers/cache_provider.js",
-        "./session_dynamo_user_provider": "./build/src/providers/session_dynamo_user_provider.js"
+        "./helpers": "./build/src/helpers/index.js",
+        "./models/*": "./build/src/models/*.js",
+        "./policies/*": "./build/src/policies/*.js",
+        "./guards/jwt": "./build/src/guards/jwt.js",
+        "./providers/cache": "./build/src/providers/cache_provider.js",
+        "./providers/session_dynamo": "./build/src/providers/session_dynamo_user_provider.js"
     },
     "keywords": [
         "diu"
@@ -59,5 +66,11 @@
     "repository": {
         "type": "git",
         "url": "ssh://git-codecommit.eu-west-2.amazonaws.com/v1/repos/npm-data-functions"
+    },
+    "dependencies": {
+        "@aws-sdk/lib-dynamodb": "^3.682.0",
+        "bentocache": "^1.0.0-beta.9",
+        "dyngoose": "^4.11.1",
+        "reflect-metadata": "^0.2.2"
     }
 }

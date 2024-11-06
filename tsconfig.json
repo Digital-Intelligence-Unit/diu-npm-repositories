@@ -3,5 +3,7 @@
     "compilerOptions": {
       "rootDir": "./",
       "outDir": "./build",
+      "emitDecoratorMetadata": true,
+      "useDefineForClassFields": false
     }
 }

@@ -1,5 +1,7 @@
-import { AWSHelper } from "."
-import { AtomicPayload } from '../models';
+import { AWSHelper } from "./aws.js"
+import { fromEnv } from "@aws-sdk/credential-providers";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 export class EnvHelper {
     static async setPrimarySecrets() {
@@ -35,16 +37,27 @@ export class EnvHelper {
         process.env.AWS_SECRETID = process.env.AWS_SECRETID || process.env.AWS_ACCESS_KEY_ID
         process.env.AWS_SECRETKEY = process.env.AWS_SECRETKEY || process.env.AWS_SECRET_ACCESS_KEY
 
-        // Set config from atomic payload
-        const configuration: any = (await AtomicPayload.primaryKey.get({
-            'id': 'apisettings',
-            'type': 'ApiSettings'
-        }))?.config;
+        // Set config from atomic payload (Temporary implementation)
+        const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient(fromEnv()));
+        let payload = (await documentClient.send(
+            new QueryCommand({
+                TableName: "atomic_payload",
+                KeyConditionExpression: "id = :id AND #type = :type",
+                ExpressionAttributeNames: {
+                    '#type': 'type'
+                },
+                ExpressionAttributeValues: {
+                    ':id': 'apisettings',
+                    ':type': 'ApiSettings'
+                }
+            })
+        )) as any;
+        payload = payload.Items ? payload.Items[0].config : { configuration: [] }
 
         // Configure
-        for (let i = 0; i < configuration.configuration.length; i++) {
+        for (let i = 0; i < payload.configuration.length; i++) {
             // Set env variables
-            const apiSetting = configuration.configuration[i]
+            const apiSetting = payload.configuration[i]
             try {
                 // Get from secrets manager
                 const credentials = JSON.parse(await AWSHelper.getSecret(apiSetting.secretName))
@@ -58,6 +71,6 @@ export class EnvHelper {
             }
         }
 
-        return configuration;
+        return payload;
     }
 }

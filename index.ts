@@ -7,4 +7,9 @@
 |
 */
 
+// Package configuration
 export { configure } from './configure.js'
+
+// Share app instance
+import { setApp } from '@adonisjs/core/services/app';
+export const shareApplicationIoc = setApp;

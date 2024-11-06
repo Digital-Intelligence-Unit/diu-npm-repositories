@@ -21,13 +21,6 @@ export async function configure(_command: ConfigureCommand) {
      * Register provider
      */
     await codemods.updateRcFile((rcFile) => {
-        rcFile.addProvider('diu-data-functions/cache_provider')
-    })
-
-    /**
-     * Publish migration file
-     */
-    await codemods.makeUsingStub(stubsRoot, 'migrations/create_db.stub', {
-        prefix: new Date().getTime(),
+        rcFile.addProvider('diu-data-functions/providers/cache')
     })
 }

@@ -4,7 +4,7 @@ import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-sec
 export class AWSHelper {
     static async getSecret(id: string): Promise<string> {
         const client = new SecretsManagerClient({ 
-            credentials: process.env.NODE_ENV ? fromSSO() : fromEnv({}) 
+            credentials: (!process.env.NODE_ENV || process.env.NODE_ENV == 'local') ? fromSSO() : fromEnv()
         });
 
         const secret = await client.send(
