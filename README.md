@@ -1,6 +1,6 @@
-# Digital Intelligence Unit (DIU) @ NHS Blackpool CCG - Data Functions NPM Repository
+# Digital Intelligence Unit (DIU) @ L&SC ICB - Data Functions NPM Repository
 
-NPM Repository for common data and database functions across applications
+NPM Repository for common functionality accross backend APIs
 
 ## Overview
 
@@ -8,7 +8,9 @@ The Digital Intelligence Unit @ NHS L&SC ICB have created a cloud-deployed Busin
 
 ## Other Repositories that utilise this deployment
 
-- API Server: <https://github.com/morgans3/NHS_Business_Intelligence_Platform_Api>
+- API Server: <https://github.com/Digital-Intelligence-Unit/NHS_Business_Intelligence_Platform_Api>
+- API V2 Server: <https://github.com/Digital-Intelligence-Unit/NHS_Business_Intelligence_Platform_ApiV2>
+- Crossfilter Server: <https://github.com/Digital-Intelligence-Unit/NHS_Business_Intelligence_Platform_Crossfilter>
 
 ## Pre-requisites
 
@@ -17,6 +19,7 @@ The Digital Intelligence Unit @ NHS L&SC ICB have created a cloud-deployed Busin
 - Node.js v20 or later installed
 
 ## Usage notes
+- During testing use yalc to install (npm link causes issues) https://meijer.ws/articles/linking-packages-with-yalc
 - Only common functionality should be placed here. Additional logic i.e. models specific to an application should be created in their respective repositories
 
 ## Terms of Use
@@ -29,6 +32,6 @@ It shall remain free to the NHS and all UK public services.
 
 ### Contributions
 
-This code has been authored by colleagues in the Digital Intelligence Unit @ NHS Blackpool CCG.
+This code has been authored by colleagues in the Digital Intelligence Unit @ L&SC ICB.
 
 _This project and all code within is © Crown copyright and available under the terms of the Open Government 3.0 licence._

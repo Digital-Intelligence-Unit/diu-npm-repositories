@@ -4,6 +4,11 @@
       "rootDir": "./",
       "outDir": "./build",
       "emitDecoratorMetadata": true,
-      "useDefineForClassFields": false
+      "useDefineForClassFields": false, // For model exports
+
+      // Custom ignores
+      "strictPropertyInitialization": false,
+      "noUnusedParameters": false,
+      "noUnusedLocals": false
     }
 }
