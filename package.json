@@ -1,6 +1,6 @@
 {
     "name": "diu-data-functions",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "description": "NPM Repository for common data and database functions across applications",
     "type": "module",
     "scripts": {

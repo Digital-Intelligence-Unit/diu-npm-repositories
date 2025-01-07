@@ -2,7 +2,7 @@
 import util from 'node:util';
 import { default as axios } from 'axios';
 import MySqlClient from 'knex/lib/dialects/mysql/index.js';
-import { SqlFormat } from './sql-format.js';
+import { SqlFormat } from './sql.js';
 
 export class PinotClient extends MySqlClient {
 
