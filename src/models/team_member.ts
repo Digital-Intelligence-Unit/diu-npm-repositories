@@ -1,4 +1,5 @@
 import { Dyngoose } from 'dyngoose'
+import { v4 as uuidv4 } from 'uuid';
 
 @Dyngoose.$Table({ name: 'teammembers' })
 export default class TeamMember extends Dyngoose.Table {
@@ -9,10 +10,19 @@ export default class TeamMember extends Dyngoose.Table {
     teamcode: string
 
     @Dyngoose.Attribute.String({ trim: true })
+    email: string
+
+    @Dyngoose.Attribute.String({ trim: true })
     username: string
 
     @Dyngoose.Attribute.String({ trim: true })
     organisation: string
+
+    @Dyngoose.Attribute.Date({ nowOnCreate: true })
+    joindate: string
+
+    @Dyngoose.Attribute.String({ trim: true })
+    approved_by: string
 
     @Dyngoose.$PrimaryKey('id', 'teamcode')
     static readonly primaryKey: Dyngoose.Query.PrimaryKey<TeamMember, string, string>
@@ -26,5 +36,9 @@ export default class TeamMember extends Dyngoose.Table {
     get $primaryKeyValue() {
         // $A
         return this.id
+    }
+
+    async beforeSave(event: Dyngoose.Events.BeforeSaveEvent<this>): Promise<any> {
+        if(!this.id) { this.id = uuidv4(); }
     }
 }
