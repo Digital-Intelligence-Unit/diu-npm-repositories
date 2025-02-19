@@ -30,6 +30,9 @@ export default class TeamMember extends Dyngoose.Table {
     @Dyngoose.$GlobalSecondaryIndex({ hashKey: 'username', rangeKey: 'organisation', name: 'username-organisation-index' })
     static readonly usernameOrgIndex: Dyngoose.Query.GlobalSecondaryIndex<TeamMember>
 
+    @Dyngoose.$GlobalSecondaryIndex({ hashKey: 'teamcode', name: 'teamcode-index' })
+    static readonly teamCodeIndex: Dyngoose.Query.GlobalSecondaryIndex<TeamMember>
+
     @Dyngoose.$DocumentClient()
     static readonly documentClient: Dyngoose.DocumentClient<TeamMember>
 
