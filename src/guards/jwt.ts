@@ -96,6 +96,7 @@ export class JwtGuard<UserProvider extends JwtUserProviderContract<unknown>>
          */
         const payload = jwt.verify(token, this.#options.secret)
         if (typeof payload !== 'object' || !('userId' in payload)) {
+            this.isAuthenticated = false;
             throw new errors.E_UNAUTHORIZED_ACCESS('Unauthorized access', {
                 guardDriverName: this.driverName,
             })
@@ -107,17 +108,18 @@ export class JwtGuard<UserProvider extends JwtUserProviderContract<unknown>>
         const providerUser = await this.#userProvider.findById(payload.userId)
         if (!providerUser) {
             throw new errors.E_UNAUTHORIZED_ACCESS('Unauthorized access', {
-            guardDriverName: this.driverName,
+                guardDriverName: this.driverName,
             })
         }
     
-        this.user = providerUser.getOriginal()
+        this.user = providerUser.getOriginal();
+        this.isAuthenticated = true;
         return this.getUserOrFail()
     }
 
     async check(): Promise<boolean> {
         try {
-            await this.authenticate()
+            await this.authenticate();
             return true
         } catch {
             return false
