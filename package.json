@@ -1,6 +1,6 @@
 {
     "name": "diu-data-functions",
-    "version": "2.0.8",
+    "version": "2.0.9",
     "description": "NPM Repository for common data and database functions across applications",
     "type": "module",
     "scripts": {
@@ -68,7 +68,10 @@
         "url": "ssh://git-codecommit.eu-west-2.amazonaws.com/v1/repos/npm-data-functions"
     },
     "dependencies": {
+        "@aws-sdk/client-s3": "^3.857.0",
         "@aws-sdk/lib-dynamodb": "^3.682.0",
+        "@aws-sdk/s3-presigned-post": "^3.857.0",
+        "@aws-sdk/s3-request-presigner": "^3.857.0",
         "axios": "^1.7.9",
         "bentocache": "^1.0.0-beta.9",
         "dyngoose": "^4.11.1",

@@ -1,7 +1,5 @@
 import { fromEnv, fromSSO } from "@aws-sdk/credential-providers";
 import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager'
-import { parseArgs } from "util";
-import { profile } from "console";
 
 export class AWSHelper {
     static getCredentials() {
