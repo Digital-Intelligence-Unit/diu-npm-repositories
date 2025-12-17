@@ -65,7 +65,7 @@
     "license": "OGL-3.0",
     "repository": {
         "type": "git",
-        "url": "ssh://git-codecommit.eu-west-2.amazonaws.com/v1/repos/npm-data-functions"
+        "url": "https://github.com/Digital-Intelligence-Unit/diu-npm-repositories"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.857.0",
