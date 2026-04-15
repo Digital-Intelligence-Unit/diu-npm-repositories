@@ -1,14 +1,12 @@
 {
     "name": "diu-data-functions",
-    "version": "1.2.92",
+    "version": "1.2.94",
     "description": "NPM Repository for common data and database functions across applications",
     "main": "index.js",
     "dependencies": {
-        "@aws-sdk/credential-providers": "^3.450.0",
+        "@aws-sdk/credential-providers": "^3.529.0",
         "activedirectory": "^0.7.2",
-        "adaptive-expressions": "^4.16.0",
-        "adaptivecards-templating": "^2.2.0",
-        "aws-sdk": "^2.540.0",
+        "aws-sdk": "^2.1693.0",
         "bcryptjs": "~2.4.3",
         "crypto-js": "^4.1.1",
         "fastest-validator": "^1.12.0",
@@ -16,7 +14,6 @@
         "juice": "^8.1.0",
         "lodash": "^4.17.21",
         "luxon": "^2.4.0",
-        "ms-teams-webhook": "^1.0.4",
         "nodemailer": "^6.7.3",
         "pg": "^8.7.3",
         "request": "^2.88.2",
@@ -38,14 +35,14 @@
     "keywords": [
         "diu"
     ],
-    "homepage": "https://github.com/morgans3/diu-npm-repositories",
+    "homepage": "https://github.com/Digital-Intelligence-Unit/diu-npm-repositories",
     "bugs": {
-        "url": "https://github.com/morgans3/diu-npm-repositories/issues"
+        "url": "https://github.com/Digital-Intelligence-Unit/diu-npm-repositories/issues"
     },
-    "author": "stewartmorganv2",
+    "author": "Digital-Intelligence-Unit",
     "license": "OGL-3.0",
     "repository": {
         "type": "git",
-        "url": "ssh://git-codecommit.eu-west-2.amazonaws.com/v1/repos/npm-data-functions"
+        "url": "https://github.com/Digital-Intelligence-Unit/diu-npm-repositories"
     }
 }

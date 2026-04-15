@@ -64,7 +64,6 @@ const Helpers = {
     Middleware: require("./helpers/middleware"),
     Email: require("./helpers/email"),
     Validator: require("./helpers/validator"),
-    MsTeams: require("./helpers/ms-teams"),
     Permissions: require("./helpers/permissions"),
     S3: require("./helpers/s3")
 };
